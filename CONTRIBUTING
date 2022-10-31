@@ -1,9 +1,9 @@
 # Contributing
 
-To add a new event, add a new `.go` file in the root of the repo named after your event in `snake_case` format. For example, if we'd like to add a `cf:scan.created` event, create a file called `scan_created.go`. This file will contain a struct for your event.
+To add a new event, add a new `.go` file in the root of the repo named after your event in `snake_case` format. For example, if we'd like to add a `cf:scan.created` event, create a file called `event_scan_created.go`. This file will contain a struct for your event.
 
 ```go
-// scan_created.go
+// event_scan_created.go
 
 type ScanCreated struct {}
 ```
@@ -41,7 +41,7 @@ You also must add `json` tags to your struct fields using `snake_case` format.
 An example for the `cf:scan.created` event might look like this:
 
 ```go
-// scan_created.go
+// event_scan_created.go
 
 type ScanCreated struct {
 	CreatedBy string     `json:"created_by" analytics:"usr"`
