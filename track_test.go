@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/common-fate/analytics/acore"
+	"github.com/common-fate/analytics-go/acore"
 	"github.com/stretchr/testify/assert"
 )
 

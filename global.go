@@ -3,7 +3,7 @@ package analytics
 import (
 	"sync"
 
-	"github.com/common-fate/analytics/acore"
+	"github.com/common-fate/analytics-go/acore"
 	"go.uber.org/zap"
 )
 

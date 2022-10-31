@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"github.com/common-fate/analytics"
+	"github.com/common-fate/analytics-go"
 	"go.uber.org/zap"
 )
 

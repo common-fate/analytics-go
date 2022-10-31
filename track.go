@@ -3,7 +3,7 @@ package analytics
 import (
 	"context"
 
-	"github.com/common-fate/analytics/acore"
+	"github.com/common-fate/analytics-go/acore"
 )
 
 // Event is a product analytics event that is tracked.

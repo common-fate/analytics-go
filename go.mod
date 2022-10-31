@@ -1,4 +1,4 @@
-module github.com/common-fate/analytics
+module github.com/common-fate/analytics-go
 
 go 1.19
 
