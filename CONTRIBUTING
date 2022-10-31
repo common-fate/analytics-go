@@ -1,0 +1,53 @@
+# Contributing
+
+To add a new event, add a new `.go` file in the root of the repo named after your event in `snake_case` format. For example, if we'd like to add a `cf:scan.created` event, create a file called `scan_created.go`. This file will contain a struct for your event.
+
+```go
+// scan_created.go
+
+type ScanCreated struct {}
+```
+
+Your event must implement the `Event` interface:
+
+```go
+// Event is a product analytics event that is tracked.
+type Event interface {
+	userID() string
+	eventType() string
+}
+```
+
+You need to implement the `userID` and `eventType` methods.
+
+The `userID` method should return the ID of the user that created the event. The `eventType` should return the name of the event.
+
+We use the following event name format:
+
+```
+namespace:entity.action
+```
+
+Where:
+
+- `namespace` is the project namespace, like `cf` for the Common Fate repository
+- `entity` is the thing the event relates to, like `scan`
+- `action` is the thing that happened, like `created`
+
+Additionally, you **must** add an `analytics` struct tag onto any fields which contain identifiers. This implements client-side hashing to avoid sending any raw identifiers which correspond to database values.
+
+You also must add `json` tags to your struct fields using `snake_case` format.
+
+An example for the `cf:scan.created` event might look like this:
+
+```go
+// scan_created.go
+
+type ScanCreated struct {
+	CreatedBy string     `json:"created_by" analytics:"usr"`
+}
+
+func (r *ScanCreated) userID() string { return r.CreatedBy }
+
+func (r *ScanCreated) eventType() string { return "cf:scan.created" }
+```

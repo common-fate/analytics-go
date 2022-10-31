@@ -1,0 +1,41 @@
+{
+  "batch": [
+    {
+      "groupId": "dep_qGX2xaTE-HWXyi-2U15rPMGMMPxACY-lKvKc6L5mMHs",
+      "messageId": "KSUID",
+      "timestamp": "2009-11-10T23:00:00Z",
+      "traits": {
+        "groupType": "deployment",
+        "group_count": 10,
+        "id": "dep_qGX2xaTE-HWXyi-2U15rPMGMMPxACY-lKvKc6L5mMHs",
+        "user_count": 100,
+        "version": "v0.9.0"
+      },
+      "type": "group",
+      "userId": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4"
+    },
+    {
+      "event": "cf:request.created",
+      "messageId": "KSUID",
+      "properties": {
+        "duration": 100,
+        "has_reason": true,
+        "provider": "commonfate/test-provider@v1",
+        "requested_by": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",
+        "rule": "rul_LNS4E5we6G3DpSsY2DnEu8coV7azNnjuUztaQ5SW0jo",
+        "timing_mode": "asap"
+      },
+      "timestamp": "2009-11-10T23:00:00Z",
+      "type": "track",
+      "userId": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4"
+    }
+  ],
+  "context": {
+    "library": {
+      "name": "cf-analytics-go",
+      "version": "dev"
+    }
+  },
+  "messageId": "KSUID",
+  "sentAt": "2009-11-10T23:00:00Z"
+}
