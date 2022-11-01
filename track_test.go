@@ -28,12 +28,14 @@ func TestRequestCreated(t *testing.T) {
 			name: "ok",
 			ref:  strings.TrimSpace(fixture("request-created.json")),
 			data: &RequestCreated{
-				RequestedBy:     "usr_123",
-				Provider:        "commonfate/test-provider@v1",
-				Rule:            "rul_123",
-				DurationSeconds: 100,
-				TimingMode:      TimingModeASAP,
-				HasReason:       true,
+				RequestedBy: "usr_123",
+				Provider:    "commonfate/test-provider@v1",
+				Rule:        "rul_123",
+				Timing: Timing{
+					Mode:            TimingModeASAP,
+					DurationSeconds: 100,
+				},
+				HasReason: true,
 			},
 			deployment: &Deployment{
 				ID:         "dep_123",
@@ -61,9 +63,7 @@ func TestRequestCreated(t *testing.T) {
 			})
 
 			ReplaceGlobal(client)
-			SetDeploymentLoader(func(ctx context.Context) (*Deployment, error) {
-				return tt.deployment, nil
-			})
+			SetDeploymentLoader(&testLoader{Deployment: tt.deployment})
 			Track(context.Background(), tt.data)
 			Close()
 
