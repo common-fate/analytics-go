@@ -3,17 +3,15 @@ package analytics
 import (
 	"context"
 	"sync"
-	"time"
 
 	"github.com/common-fate/analytics-go/acore"
 	"go.uber.org/zap"
 )
 
 type globalDep struct {
-	mu      *sync.Mutex
-	dep     *Deployment
-	timeout time.Duration
-	loader  DeploymentLoader
+	mu     *sync.Mutex
+	dep    *Deployment
+	loader DeploymentLoader
 }
 
 type DeploymentLoader interface {
@@ -52,8 +50,6 @@ func (gd *globalDep) loadDeployment(ctx context.Context) {
 	}
 
 	log := zap.L().Named("cf-analytics")
-	ctx, cancel := context.WithTimeout(ctx, gd.timeout)
-	defer cancel()
 	d, err := gd.loader.LoadDeployment(ctx)
 	if err != nil {
 		log.Error("error loading deployment", zap.Error(err))
@@ -69,8 +65,7 @@ func (gd *globalDep) loadDeployment(ctx context.Context) {
 
 var (
 	globalDeployment = &globalDep{
-		timeout: time.Second,
-		mu:      &sync.Mutex{},
+		mu: &sync.Mutex{},
 	}
 )
 

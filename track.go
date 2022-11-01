@@ -44,7 +44,7 @@ func Track(ctx context.Context, e Event) {
 // enqueueAndLog logs the analytics event using the global zap logger if CF_ANALYTICS_DEBUG is set.
 func enqueueAndLog(c acore.Client, m acore.Message) {
 	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
-		zap.L().Named("cf-analytics").Error("emitting analytics event", zap.String("url", c.EndpointURL()), zap.Any("event", m))
+		zap.L().Named("cf-analytics").Info("emitting analytics event", zap.String("url", c.EndpointURL()), zap.Any("event", m))
 	}
 
 	c.Enqueue(m)
