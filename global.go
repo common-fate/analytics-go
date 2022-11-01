@@ -68,6 +68,10 @@ func Configure(c Config) {
 		return
 	}
 	ReplaceGlobal(client)
+
+	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
+		zap.L().Named("cf-analytics").Info("configured analytics client", zap.Any("config", c))
+	}
 }
 
 // ConfigureFromEnv sets up the global analytics client based on the following
