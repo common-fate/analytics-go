@@ -1,6 +1,8 @@
 package analytics
 
 import (
+	"os"
+	"strings"
 	"sync"
 
 	"github.com/common-fate/analytics-go/acore"
@@ -36,13 +38,9 @@ var (
 	}
 )
 
-// EndpointOrDefault overrides the endpoint or returns the default
+// endpointOrDefault overrides the endpoint or returns the default
 // endpoint (https://t.commonfate.io) if the endpoint is empty.
-//
-// Usage:
-//
-//	analytics.Configure(analytics.Config{Endpoint: analytics.EndpointOrDefault(os.Getenv("CF_ANALYTICS_ENDPOINT"))})
-func EndpointOrDefault(endpoint string) string {
+func endpointOrDefault(endpoint string) string {
 	if endpoint == "" {
 		return DefaultEndpoint
 	}
@@ -69,6 +67,20 @@ func Configure(c Config) {
 		return
 	}
 	ReplaceGlobal(client)
+}
+
+// ConfigureFromEnv sets up the global analytics client based on the following
+// parameters:
+//
+// - URL is CF_ANALYTICS_URL, or falls back to the default URL if not provided
+// - Disabled if CF_ANALYTICS_DISABLED is true
+func ConfigureFromEnv() {
+	enabled := strings.ToLower(os.Getenv("CF_ANALYTICS_DISABLED")) != "true"
+
+	Configure(Config{
+		Endpoint: endpointOrDefault(os.Getenv("CF_ANALYTICS_URL")),
+		Enabled:  enabled,
+	})
 }
 
 // Config is configuration for the global analytics client.
