@@ -107,6 +107,10 @@ func ReplaceGlobal(c acore.Client) {
 // Close the global client.
 func Close() {
 	client := G()
+	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
+		zap.L().Named("cf-analytics").Info("closing analytics client", zap.String("url", client.EndpointURL()))
+	}
+
 	err := client.Close()
 	if err != nil {
 		zap.L().Named("cf-analytics").Error("error closing client", zap.Error(err))
