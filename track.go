@@ -16,25 +16,23 @@ type Event interface {
 // Track an event using the global analytics client.
 func (c *Client) Track(e Event) {
 	e = hashValues(e)
-	go func() {
-		uid := e.userID()
-		typ := e.eventType()
+	uid := e.userID()
+	typ := e.eventType()
 
-		evt := acore.Track{
-			UserId:     uid,
-			Event:      typ,
-			Properties: e,
-		}
-		if c.deployment != nil {
-			enqueueAndLog(c.coreclient, acore.Group{
-				GroupId: c.deployment.ID,
-				Traits:  c.deployment.Traits(),
-				UserId:  uid,
-			})
-		}
+	evt := acore.Track{
+		UserId:     uid,
+		Event:      typ,
+		Properties: e,
+	}
+	if c.deployment != nil {
+		enqueueAndLog(c.coreclient, acore.Group{
+			GroupId: c.deployment.ID,
+			Traits:  c.deployment.Traits(),
+			UserId:  uid,
+		})
+	}
 
-		enqueueAndLog(c.coreclient, evt)
-	}()
+	enqueueAndLog(c.coreclient, evt)
 }
 
 // enqueueAndLog logs the analytics event using the global zap logger if CF_ANALYTICS_DEBUG is set.
