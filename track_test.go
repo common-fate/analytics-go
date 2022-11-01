@@ -61,10 +61,10 @@ func TestRequestCreated(t *testing.T) {
 				UID: mockId,
 			})
 
-			ReplaceGlobal(client)
-			SetDeployment(tt.deployment)
-			Track(tt.data)
-			Close()
+			c := newClient(client)
+			c.SetDeployment(tt.deployment)
+			c.Track(tt.data)
+			c.Close()
 
 			res := string(<-body)
 			assert.Equal(t, tt.ref, res)

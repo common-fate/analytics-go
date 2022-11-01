@@ -14,28 +14,26 @@ type Event interface {
 }
 
 // Track an event using the global analytics client.
-func Track(e Event) {
+func (c *Client) Track(e Event) {
 	e = hashValues(e)
 	go func() {
 		uid := e.userID()
 		typ := e.eventType()
-		client := G()
-		dep := getDeployment()
 
 		evt := acore.Track{
 			UserId:     uid,
 			Event:      typ,
 			Properties: e,
 		}
-		if dep != nil {
-			enqueueAndLog(client, acore.Group{
-				GroupId: dep.ID,
-				Traits:  dep.Traits(),
+		if c.deployment != nil {
+			enqueueAndLog(c.coreclient, acore.Group{
+				GroupId: c.deployment.ID,
+				Traits:  c.deployment.Traits(),
 				UserId:  uid,
 			})
 		}
 
-		enqueueAndLog(client, evt)
+		enqueueAndLog(c.coreclient, evt)
 	}()
 }
 

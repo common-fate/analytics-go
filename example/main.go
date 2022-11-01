@@ -6,20 +6,20 @@ import (
 )
 
 func main() {
-	analytics.Configure(analytics.Development)
-	defer analytics.Close()
+	c := analytics.New(analytics.Development)
+	defer c.Close()
 
 	log := zap.Must(zap.NewDevelopment())
 	zap.ReplaceGlobals(log)
 
-	analytics.SetDeployment(&analytics.Deployment{
+	c.SetDeployment(&analytics.Deployment{
 		ID:         "dep_123",
 		Version:    "v0.0.0",
 		UserCount:  10,
 		GroupCount: 10,
 	})
 
-	analytics.Track(&analytics.RequestCreated{
+	c.Track(&analytics.RequestCreated{
 		RequestedBy: "usr_123",
 		Provider:    "commonfate/test-provider@v1",
 		Rule:        "rul_123",

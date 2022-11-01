@@ -2,15 +2,9 @@ package analytics
 
 import (
 	"os"
-	"sync"
 
 	"github.com/common-fate/analytics-go/acore"
 	"go.uber.org/zap"
-)
-
-var (
-	depMutex     = &sync.RWMutex{}
-	globalDeploy *Deployment
 )
 
 // Deployment is a Common Fate deployment identifier.
@@ -33,18 +27,11 @@ func (d Deployment) Traits() acore.Traits {
 		Set("id", d.ID)
 }
 
-func getDeployment() *Deployment {
-	depMutex.RLock()
-	defer depMutex.RUnlock()
-	d := globalDeploy
-	return d
-}
-
 // SetDeployment sets deployment information.
-func SetDeployment(dep *Deployment) {
-	depMutex.Lock()
-	defer depMutex.Unlock()
-	globalDeploy = dep
+func (c *Client) SetDeployment(dep *Deployment) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.deployment = dep
 
 	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
 		zap.L().Named("cf-analytics").Info("set deployment", zap.Any("deployment", dep))
