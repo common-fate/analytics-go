@@ -62,7 +62,7 @@ func TestRequestCreated(t *testing.T) {
 			})
 
 			ReplaceGlobal(client)
-			SetDeploymentLoader(&testLoader{Deployment: tt.deployment})
+			SetDeployment(tt.deployment)
 			Track(tt.data)
 			Close()
 

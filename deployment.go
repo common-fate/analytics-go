@@ -8,6 +8,11 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	depMutex     = &sync.RWMutex{}
+	globalDeploy *Deployment
+)
+
 type globalDep struct {
 	mu     *sync.Mutex
 	dep    *Deployment
@@ -89,8 +94,16 @@ func (d Deployment) Traits() acore.Traits {
 		Set("id", d.ID)
 }
 
-// SetDeploymentLoader sets a function to use to load the deployment information.
-// Deployment info is lazily loaded when an analytics event is emitted.
-func SetDeploymentLoader(loader DeploymentLoader) {
-	globalDeployment.SetLoader(loader)
+func getDeployment() *Deployment {
+	depMutex.RLock()
+	defer depMutex.RUnlock()
+	d := globalDeploy
+	return d
+}
+
+// SetDeployment sets deployment information.
+func SetDeployment(dep *Deployment) {
+	depMutex.Lock()
+	defer depMutex.Unlock()
+	globalDeploy = dep
 }
