@@ -4,6 +4,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/common-fate/analytics-go/acore"
 	"go.uber.org/zap"
@@ -26,16 +27,19 @@ var (
 	Disabled = Config{
 		Endpoint: "",
 		Enabled:  false,
+		Verbose:  false,
 	}
 	// Development uses https://t-dev.commonfate.io as the endpoint.
 	Development = Config{
 		Endpoint: DevEndpoint,
 		Enabled:  true,
+		Verbose:  true,
 	}
 	// Default uses https://t.commonfate.io as the endpoint.
 	Default = Config{
 		Endpoint: DefaultEndpoint,
 		Enabled:  true,
+		Verbose:  false,
 	}
 )
 
@@ -77,6 +81,8 @@ func Configure(c Config) {
 	client, err := acore.NewWithConfig(acore.Config{
 		Endpoint: c.Endpoint,
 		Callback: debugCallback{},
+		Verbose:  c.Verbose,
+		Interval: time.Millisecond * 50,
 	})
 	if err != nil {
 		zap.L().Named("cf-analytics").Error("error setting client", zap.Error(err))
@@ -95,18 +101,18 @@ func Configure(c Config) {
 // - URL is CF_ANALYTICS_URL, or falls back to the default URL if not provided
 // - Disabled if CF_ANALYTICS_DISABLED is true
 func ConfigureFromEnv() {
-	enabled := strings.ToLower(os.Getenv("CF_ANALYTICS_DISABLED")) != "true"
-
 	Configure(Config{
 		Endpoint: endpointOrDefault(os.Getenv("CF_ANALYTICS_URL")),
-		Enabled:  enabled,
+		Enabled:  strings.ToLower(os.Getenv("CF_ANALYTICS_DISABLED")) != "true",
+		Verbose:  strings.ToLower(os.Getenv("CF_ANALYTICS_DEBUG")) == "true",
 	})
 }
 
 // Config is configuration for the global analytics client.
 type Config struct {
-	Endpoint string
-	Enabled  bool
+	Endpoint string `json:"endpoint"`
+	Enabled  bool   `json:"enabled"`
+	Verbose  bool   `json:"verbose"`
 }
 
 // G returns the global client.

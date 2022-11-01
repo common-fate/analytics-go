@@ -17,10 +17,10 @@ var (
 // If you're editing this make sure you edit the Traits()
 // method to ensure the properties propagate.
 type Deployment struct {
-	ID         string
-	Version    string
-	UserCount  int
-	GroupCount int
+	ID         string `json:"id"`
+	Version    string `json:"version"`
+	UserCount  int    `json:"user_count"`
+	GroupCount int    `json:"group_count"`
 }
 
 // Traits returns the traits to use for the group identifier
