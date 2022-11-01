@@ -28,7 +28,7 @@ func main() {
 
 	analytics.SetDeploymentLoader(&deployloader{})
 
-	analytics.Track(context.Background(), &analytics.RequestCreated{
+	analytics.Track(&analytics.RequestCreated{
 		RequestedBy: "usr_123",
 		Provider:    "commonfate/test-provider@v1",
 		Rule:        "rul_123",

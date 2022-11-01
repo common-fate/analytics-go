@@ -2,7 +2,6 @@ package analytics
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -64,7 +63,7 @@ func TestRequestCreated(t *testing.T) {
 
 			ReplaceGlobal(client)
 			SetDeploymentLoader(&testLoader{Deployment: tt.deployment})
-			Track(context.Background(), tt.data)
+			Track(tt.data)
 			Close()
 
 			res := string(<-body)

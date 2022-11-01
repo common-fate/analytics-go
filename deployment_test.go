@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -19,10 +18,9 @@ func (tl testLoader) LoadDeployment(ctx context.Context) (*Deployment, error) {
 
 func Test_globalDep_loadDeployment(t *testing.T) {
 	type fields struct {
-		mu      *sync.Mutex
-		dep     *Deployment
-		timeout time.Duration
-		loader  DeploymentLoader
+		mu     *sync.Mutex
+		dep    *Deployment
+		loader DeploymentLoader
 	}
 	tests := []struct {
 		name   string
@@ -51,10 +49,9 @@ func Test_globalDep_loadDeployment(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gd := &globalDep{
-				mu:      tt.fields.mu,
-				dep:     tt.fields.dep,
-				timeout: tt.fields.timeout,
-				loader:  tt.fields.loader,
+				mu:     tt.fields.mu,
+				dep:    tt.fields.dep,
+				loader: tt.fields.loader,
 			}
 			ctx := context.Background()
 			gd.loadDeployment(ctx)

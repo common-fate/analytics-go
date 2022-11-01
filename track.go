@@ -3,6 +3,7 @@ package analytics
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/common-fate/analytics-go/acore"
 	"go.uber.org/zap"
@@ -15,10 +16,11 @@ type Event interface {
 }
 
 // Track an event using the global analytics client.
-func Track(ctx context.Context, e Event) {
+func Track(e Event) {
 	e = hashValues(e)
 	go func() {
-
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
 		uid := e.userID()
 		typ := e.eventType()
 		client := G()
