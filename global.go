@@ -48,6 +48,20 @@ func endpointOrDefault(endpoint string) string {
 	return endpoint
 }
 
+type debugCallback struct{}
+
+func (debugCallback) Success(m acore.Message) {
+	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
+		zap.L().Named("cf-analytics").Info("event success", zap.Any("event", m))
+	}
+}
+
+func (debugCallback) Failure(m acore.Message, err error) {
+	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
+		zap.L().Named("cf-analytics").Error("event failure", zap.Any("event", m), zap.Error(err))
+	}
+}
+
 // Configure the global analytics client.
 // Usage:
 //
@@ -62,6 +76,7 @@ func Configure(c Config) {
 
 	client, err := acore.NewWithConfig(acore.Config{
 		Endpoint: c.Endpoint,
+		Callback: debugCallback{},
 	})
 	if err != nil {
 		zap.L().Named("cf-analytics").Error("error setting client", zap.Error(err))
