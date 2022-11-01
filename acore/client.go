@@ -13,7 +13,30 @@ import (
 const unimplementedError = "not implemented"
 const SIZE_DEFAULT = 50_000
 
-type Client struct {
+// This interface is the main API exposed by the analytics package.
+// Values that satsify this interface are returned by the client constructors
+// provided by the package and provide a way to send messages via the HTTP API.
+type Client interface {
+	io.Closer
+
+	// Queues a message to be sent by the client when the conditions for a batch
+	// upload are met.
+	// This is the main method you'll be using, a typical flow would look like
+	// this:
+	//
+	//	client := analytics.New(writeKey)
+	//	...
+	//	client.Enqueue(analytics.Track{ ... })
+	//	...
+	//	client.Close()
+	//
+	// The method returns an error if the message queue not be queued, which
+	// happens if the client was already closed at the time the method was
+	// called or if the message was malformed.
+	Enqueue(Message) error
+}
+
+type client struct {
 	Config
 
 	// This channel is where the `Enqueue` method writes messages so they can be
@@ -37,7 +60,7 @@ type Client struct {
 // Instantiate a new client that uses the write key passed as first argument to
 // send messages to the backend.
 // The client is created with the default configuration.
-func New() *Client {
+func New() Client {
 	// Here we can ignore the error because the default config is always valid.
 	c, _ := NewWithConfig(Config{})
 	return c
@@ -48,12 +71,12 @@ func New() *Client {
 // The function will return an error if the configuration contained impossible
 // values (like a negative flush interval for example).
 // When the function returns an error the returned client will always be nil.
-func NewWithConfig(config Config) (cli *Client, err error) {
+func NewWithConfig(config Config) (cli Client, err error) {
 	if err = config.validate(); err != nil {
 		return
 	}
 
-	c := &Client{
+	c := &client{
 		Config:   makeConfig(config),
 		msgs:     make(chan Message, 100),
 		quit:     make(chan struct{}),
@@ -70,7 +93,7 @@ func NewWithConfig(config Config) (cli *Client, err error) {
 	return
 }
 
-func (c *Client) Enqueue(msg Message) (err error) {
+func (c *client) Enqueue(msg Message) (err error) {
 	msg = dereferenceMessage(msg)
 	if err = msg.Validate(); err != nil {
 		return
@@ -168,7 +191,7 @@ func (c *Client) Enqueue(msg Message) (err error) {
 	return
 }
 
-func (c *Client) loop() {
+func (c *client) loop() {
 	defer close(c.shutdown)
 
 	wg := &sync.WaitGroup{}
@@ -211,7 +234,7 @@ func (c *Client) loop() {
 }
 
 // Close and flush metrics.
-func (c *Client) Close() (err error) {
+func (c *client) Close() (err error) {
 	defer func() {
 		// Always recover, a panic could be raised if `c`.quit was closed which
 		// means the method was called more than once.
@@ -225,7 +248,7 @@ func (c *Client) Close() (err error) {
 }
 
 // Asychronously send a batched requests.
-func (c *Client) sendAsync(msgs []message, wg *sync.WaitGroup, ex *executor) {
+func (c *client) sendAsync(msgs []message, wg *sync.WaitGroup, ex *executor) {
 	wg.Add(1)
 
 	if !ex.do(func() {
@@ -247,7 +270,7 @@ func (c *Client) sendAsync(msgs []message, wg *sync.WaitGroup, ex *executor) {
 }
 
 // Send batch request.
-func (c *Client) send(msgs []message) {
+func (c *client) send(msgs []message) {
 	const attempts = 10
 
 	b, err := json.Marshal(batch{
@@ -284,7 +307,7 @@ func (c *Client) send(msgs []message) {
 }
 
 // Upload serialized batch message.
-func (c *Client) upload(b []byte) error {
+func (c *client) upload(b []byte) error {
 	url := c.Endpoint + "/batch/"
 	req, err := http.NewRequest("POST", url, bytes.NewReader(b))
 	if err != nil {
@@ -310,7 +333,7 @@ func (c *Client) upload(b []byte) error {
 }
 
 // Report on response body.
-func (c *Client) report(res *http.Response) (err error) {
+func (c *client) report(res *http.Response) (err error) {
 	var body []byte
 
 	if res.StatusCode < 300 {
@@ -327,7 +350,7 @@ func (c *Client) report(res *http.Response) (err error) {
 	return fmt.Errorf("%d %s", res.StatusCode, res.Status)
 }
 
-func (c *Client) push(q *messageQueue, m Message, wg *sync.WaitGroup, ex *executor) {
+func (c *client) push(q *messageQueue, m Message, wg *sync.WaitGroup, ex *executor) {
 	var msg message
 	var err error
 
@@ -345,35 +368,35 @@ func (c *Client) push(q *messageQueue, m Message, wg *sync.WaitGroup, ex *execut
 	}
 }
 
-func (c *Client) flush(q *messageQueue, wg *sync.WaitGroup, ex *executor) {
+func (c *client) flush(q *messageQueue, wg *sync.WaitGroup, ex *executor) {
 	if msgs := q.flush(); msgs != nil {
 		c.debugf("flushing %d messages", len(msgs))
 		c.sendAsync(msgs, wg, ex)
 	}
 }
 
-func (c *Client) debugf(format string, args ...interface{}) {
+func (c *client) debugf(format string, args ...interface{}) {
 	if c.Verbose {
 		c.logf(format, args...)
 	}
 }
 
-func (c *Client) logf(format string, args ...interface{}) {
+func (c *client) logf(format string, args ...interface{}) {
 	c.Logger.Logf(format, args...)
 }
 
-func (c *Client) Errorf(format string, args ...interface{}) {
+func (c *client) Errorf(format string, args ...interface{}) {
 	c.Logger.Errorf(format, args...)
 }
 
-func (c *Client) maxBatchBytes() int {
+func (c *client) maxBatchBytes() int {
 	b, _ := json.Marshal(batch{
 		Messages: []message{},
 	})
 	return c.MaxBatchBytes - len(b)
 }
 
-func (c *Client) notifySuccess(msgs []message) {
+func (c *client) notifySuccess(msgs []message) {
 	if c.Callback != nil {
 		for _, m := range msgs {
 			c.Callback.Success(m.msg)
@@ -381,7 +404,7 @@ func (c *Client) notifySuccess(msgs []message) {
 	}
 }
 
-func (c *Client) notifyFailure(msgs []message, err error) {
+func (c *client) notifyFailure(msgs []message, err error) {
 	if c.Callback != nil {
 		for _, m := range msgs {
 			c.Callback.Failure(m.msg, err)

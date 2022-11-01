@@ -10,7 +10,7 @@ type TestConfig struct {
 	UID func() string
 }
 
-func NewTestWithConfig(t *testing.T, config Config, tc TestConfig) *Client {
+func NewTestWithConfig(t *testing.T, config Config, tc TestConfig) Client {
 	config.now = tc.Now
 	config.uid = tc.UID
 	c, err := NewWithConfig(config)

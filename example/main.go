@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	analytics.SetDevelopment(true)
+	analytics.Configure(analytics.Development)
 	defer analytics.Close()
 
 	log := zap.Must(zap.NewDevelopment())

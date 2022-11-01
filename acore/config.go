@@ -78,10 +78,6 @@ type Config struct {
 	// mock the current time.
 	maxConcurrentRequests int
 
-	//This variable will disable checking for the cluster-info end point and
-	//split the payload at node level for multi node setup
-	NoProxySupport bool
-
 	// Maximum bytes in a message
 	MaxMessageBytes int
 
