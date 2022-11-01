@@ -28,12 +28,12 @@ func TestRequestCreated(t *testing.T) {
 			name: "ok",
 			ref:  strings.TrimSpace(fixture("request-created.json")),
 			data: &RequestCreated{
-				RequestedBy: "usr_123",
-				Provider:    "commonfate/test-provider@v1",
-				Rule:        "rul_123",
-				Duration:    100,
-				TimingMode:  TimingModeASAP,
-				HasReason:   true,
+				RequestedBy:     "usr_123",
+				Provider:        "commonfate/test-provider@v1",
+				Rule:            "rul_123",
+				DurationSeconds: 100,
+				TimingMode:      TimingModeASAP,
+				HasReason:       true,
 			},
 			deployment: &Deployment{
 				ID:         "dep_123",

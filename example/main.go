@@ -25,11 +25,11 @@ func main() {
 	})
 
 	analytics.Track(context.Background(), &analytics.RequestCreated{
-		RequestedBy: "usr_123",
-		Provider:    "commonfate/test-provider@v1",
-		Rule:        "rul_123",
-		Duration:    100,
-		TimingMode:  analytics.TimingModeASAP,
-		HasReason:   true,
+		RequestedBy:     "usr_123",
+		Provider:        "commonfate/test-provider@v1",
+		Rule:            "rul_123",
+		DurationSeconds: 100,
+		TimingMode:      analytics.TimingModeASAP,
+		HasReason:       true,
 	})
 }

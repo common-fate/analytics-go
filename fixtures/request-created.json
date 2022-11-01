@@ -18,7 +18,7 @@
       "event": "cf:request.created",
       "messageId": "KSUID",
       "properties": {
-        "duration": 100,
+        "duration_seconds": 100,
         "has_reason": true,
         "provider": "commonfate/test-provider@v1",
         "requested_by": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",

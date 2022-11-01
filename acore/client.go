@@ -34,6 +34,9 @@ type Client interface {
 	// happens if the client was already closed at the time the method was
 	// called or if the message was malformed.
 	Enqueue(Message) error
+
+	// EndpointURL returns the configured analytics endpoint
+	EndpointURL() string
 }
 
 type client struct {
@@ -91,6 +94,10 @@ func NewWithConfig(config Config) (cli Client, err error) {
 
 	cli = c
 	return
+}
+
+func (c *client) EndpointURL() string {
+	return c.Endpoint
 }
 
 func (c *client) Enqueue(msg Message) (err error) {

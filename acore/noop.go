@@ -6,3 +6,5 @@ type NoopClient struct{}
 func (c *NoopClient) Enqueue(Message) error { return nil }
 
 func (c *NoopClient) Close() error { return nil }
+
+func (c *NoopClient) EndpointURL() string { return "<noop client>" }

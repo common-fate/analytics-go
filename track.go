@@ -2,8 +2,10 @@ package analytics
 
 import (
 	"context"
+	"os"
 
 	"github.com/common-fate/analytics-go/acore"
+	"go.uber.org/zap"
 )
 
 // Event is a product analytics event that is tracked.
@@ -28,13 +30,22 @@ func Track(ctx context.Context, e Event) {
 			Properties: e,
 		}
 		if dep != nil {
-			client.Enqueue(acore.Group{
+			enqueueAndLog(client, acore.Group{
 				GroupId: dep.ID,
 				Traits:  dep.Traits(),
 				UserId:  uid,
 			})
 		}
 
-		client.Enqueue(evt)
+		enqueueAndLog(client, evt)
 	}()
+}
+
+// enqueueAndLog logs the analytics event using the global zap logger if CF_ANALYTICS_DEBUG is set.
+func enqueueAndLog(c acore.Client, m acore.Message) {
+	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
+		zap.L().Named("cf-analytics").Error("emitting analytics event", zap.String("url", c.EndpointURL()), zap.Any("event", m))
+	}
+
+	c.Enqueue(m)
 }
