@@ -79,10 +79,11 @@ func Configure(c Config) {
 	}
 
 	client, err := acore.NewWithConfig(acore.Config{
-		Endpoint: c.Endpoint,
-		Callback: debugCallback{},
-		Verbose:  c.Verbose,
-		Interval: time.Millisecond * 50,
+		Endpoint:  c.Endpoint,
+		Callback:  debugCallback{},
+		Verbose:   c.Verbose,
+		Interval:  time.Millisecond * 50,
+		BatchSize: 2,
 	})
 	if err != nil {
 		zap.L().Named("cf-analytics").Error("error setting client", zap.Error(err))
