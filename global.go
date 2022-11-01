@@ -16,8 +16,9 @@ const (
 
 var (
 	// globalMu locks concurrent access to the global client.
-	globalMu     sync.RWMutex
-	globalClient = acore.New()
+	globalMu sync.RWMutex
+	// call analytics.Configure() to set up the client.
+	globalClient acore.Client = &acore.NoopClient{}
 )
 
 var (
