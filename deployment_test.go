@@ -9,12 +9,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type testLoader struct {
+	Deployment *Deployment
+}
+
+func (tl testLoader) LoadDeployment(ctx context.Context) (*Deployment, error) {
+	return tl.Deployment, nil
+}
+
 func Test_globalDep_loadDeployment(t *testing.T) {
 	type fields struct {
 		mu      *sync.Mutex
 		dep     *Deployment
 		timeout time.Duration
-		loader  func(ctx context.Context) (*Deployment, error)
+		loader  DeploymentLoader
 	}
 	tests := []struct {
 		name   string
@@ -24,10 +32,8 @@ func Test_globalDep_loadDeployment(t *testing.T) {
 		{
 			name: "ok",
 			fields: fields{
-				mu: &sync.Mutex{},
-				loader: func(ctx context.Context) (*Deployment, error) {
-					return &Deployment{ID: "test"}, nil
-				},
+				mu:     &sync.Mutex{},
+				loader: &testLoader{Deployment: &Deployment{ID: "test"}},
 			},
 			want: &Deployment{
 				ID: "test",
@@ -36,10 +42,8 @@ func Test_globalDep_loadDeployment(t *testing.T) {
 		{
 			name: "load with no id return nil",
 			fields: fields{
-				mu: &sync.Mutex{},
-				loader: func(ctx context.Context) (*Deployment, error) {
-					return &Deployment{ID: ""}, nil
-				},
+				mu:     &sync.Mutex{},
+				loader: &testLoader{Deployment: &Deployment{ID: ""}},
 			},
 			want: nil,
 		},

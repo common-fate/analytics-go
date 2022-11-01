@@ -13,10 +13,14 @@ type globalDep struct {
 	mu      *sync.Mutex
 	dep     *Deployment
 	timeout time.Duration
-	loader  func(ctx context.Context) (*Deployment, error)
+	loader  DeploymentLoader
 }
 
-func (gd *globalDep) SetLoader(loader func(ctx context.Context) (*Deployment, error)) {
+type DeploymentLoader interface {
+	LoadDeployment(ctx context.Context) (*Deployment, error)
+}
+
+func (gd *globalDep) SetLoader(loader DeploymentLoader) {
 	gd.loader = loader
 }
 
@@ -43,10 +47,14 @@ func (gd *globalDep) Get(ctx context.Context) *Deployment {
 }
 
 func (gd *globalDep) loadDeployment(ctx context.Context) {
+	if gd.loader == nil {
+		return
+	}
+
 	log := zap.L().Named("cf-analytics")
 	ctx, cancel := context.WithTimeout(ctx, gd.timeout)
 	defer cancel()
-	d, err := gd.loader(ctx)
+	d, err := gd.loader.LoadDeployment(ctx)
 	if err != nil {
 		log.Error("error loading deployment", zap.Error(err))
 		// just set an empty deployment to prevent trying to load it again the next time.
@@ -88,6 +96,6 @@ func (d Deployment) Traits() acore.Traits {
 
 // SetDeploymentLoader sets a function to use to load the deployment information.
 // Deployment info is lazily loaded when an analytics event is emitted.
-func SetDeploymentLoader(loader func(ctx context.Context) (*Deployment, error)) {
+func SetDeploymentLoader(loader DeploymentLoader) {
 	globalDeployment.SetLoader(loader)
 }
