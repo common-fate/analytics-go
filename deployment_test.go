@@ -30,11 +30,11 @@ func Test_globalDep_loadDeployment(t *testing.T) {
 				},
 			},
 			want: &Deployment{
-				ID: "dep_TZZ6MBEb8p8OugHESLN1wWKbL-0BzfzDrtkfG1fV3V4",
+				ID: "test",
 			},
 		},
 		{
-			name: "load with no id should not be hashed",
+			name: "load with no id return nil",
 			fields: fields{
 				mu: &sync.Mutex{},
 				loader: func(ctx context.Context) (*Deployment, error) {

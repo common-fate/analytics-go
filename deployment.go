@@ -56,9 +56,6 @@ func (gd *globalDep) loadDeployment(ctx context.Context) {
 	gd.mu.Lock()
 	defer gd.mu.Unlock()
 
-	// hash the deployment ID
-	d = hashValues(d)
-
 	gd.dep = d
 }
 
@@ -73,7 +70,7 @@ var (
 // If you're editing this make sure you edit the Traits()
 // method to ensure the properties propagate.
 type Deployment struct {
-	ID         string `analytics:"dep"`
+	ID         string
 	Version    string
 	UserCount  int
 	GroupCount int
