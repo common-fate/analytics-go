@@ -1,5 +1,7 @@
 package analytics
 
+import "github.com/common-fate/analytics-go/acore"
+
 func init() {
 	registerEvent(&RequestReviewed{})
 }
@@ -15,7 +17,15 @@ type RequestReviewed struct {
 	// PendingDurationSeconds is how long the request has been waiting for a review.
 	PendingDurationSeconds float64 `json:"pending_duration_seconds"`
 	// Review is APPROVE or DENY
-	Review string `json:"review"`
+	Review          string `json:"review"`
+	ReviewerIsAdmin bool   `json:"reviewer_is_admin"`
+}
+
+func (r *RequestReviewed) payloads() []acore.Message {
+	return []acore.Message{acore.Identify{
+		UserId: r.ReviewedBy,
+		Traits: acore.NewTraits().Set("role", getRole(r.ReviewerIsAdmin)),
+	}}
 }
 
 func (r *RequestReviewed) userID() string { return r.ReviewedBy }

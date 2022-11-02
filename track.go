@@ -7,6 +7,10 @@ import (
 	"go.uber.org/zap"
 )
 
+type payloader interface {
+	payloads() []acore.Message
+}
+
 // Track an event using the global analytics client.
 func (c *Client) Track(e Event) {
 	e = hashValues(e)
@@ -34,6 +38,19 @@ func (c *Client) Track(e Event) {
 	}
 
 	enqueueAndLog(c.coreclient, evt)
+
+	if uid != "" {
+		enqueueAndLog(c.coreclient, acore.Identify{
+			UserId: uid,
+			Traits: acore.NewTraits().Set("user_id", uid),
+		})
+	}
+
+	if pl, ok := e.(payloader); ok {
+		for _, m := range pl.payloads() {
+			enqueueAndLog(c.coreclient, m)
+		}
+	}
 }
 
 // enqueueAndLog logs the analytics event using the global zap logger if CF_ANALYTICS_DEBUG is set.

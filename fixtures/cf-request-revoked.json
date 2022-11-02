@@ -30,6 +30,15 @@
       "timestamp": "2009-11-10T23:00:00Z",
       "type": "track",
       "userId": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0"
+    },
+    {
+      "messageId": "KSUID",
+      "timestamp": "2009-11-10T23:00:00Z",
+      "traits": {
+        "user_id": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0"
+      },
+      "type": "identify",
+      "userId": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0"
     }
   ],
   "context": {

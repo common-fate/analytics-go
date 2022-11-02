@@ -27,6 +27,7 @@
         "requested_by": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",
         "review": "APPROVE",
         "reviewed_by": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0",
+        "reviewer_is_admin": false,
         "rule_id": "rul_LNS4E5we6G3DpSsY2DnEu8coV7azNnjuUztaQ5SW0jo",
         "timing": {
           "duration_seconds": 100,
@@ -35,6 +36,24 @@
       },
       "timestamp": "2009-11-10T23:00:00Z",
       "type": "track",
+      "userId": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0"
+    },
+    {
+      "messageId": "KSUID",
+      "timestamp": "2009-11-10T23:00:00Z",
+      "traits": {
+        "user_id": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0"
+      },
+      "type": "identify",
+      "userId": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0"
+    },
+    {
+      "messageId": "KSUID",
+      "timestamp": "2009-11-10T23:00:00Z",
+      "traits": {
+        "role": "end_user"
+      },
+      "type": "identify",
       "userId": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0"
     }
   ],
