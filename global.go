@@ -32,7 +32,7 @@ func newClient(coreclient acore.Client) *Client {
 	return &Client{
 		mu:         &sync.Mutex{},
 		coreclient: coreclient,
-		uid:        func() string { return ksuid.New().String() },
+		uid:        func() string { return "anon_" + ksuid.New().String() },
 	}
 }
 
@@ -95,7 +95,7 @@ func New(c Config) *Client {
 		Callback:  debugCallback{},
 		Verbose:   c.Verbose,
 		Interval:  time.Millisecond * 50,
-		BatchSize: 2,
+		BatchSize: 3,
 	})
 	if err != nil {
 		zap.L().Named("cf-analytics").Error("error setting client", zap.Error(err))

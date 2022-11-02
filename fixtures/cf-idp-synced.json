@@ -1,7 +1,6 @@
 {
   "batch": [
     {
-      "anonymousId": "KSUID",
       "groupId": "dep_123",
       "messageId": "KSUID",
       "timestamp": "2009-11-10T23:00:00Z",
@@ -11,19 +10,21 @@
         "stage": "test",
         "version": "v0.9.0"
       },
-      "type": "group"
+      "type": "group",
+      "userId": "dep_123"
     },
     {
-      "anonymousId": "KSUID",
       "event": "cf:idp.synced",
       "messageId": "KSUID",
       "properties": {
+        "deployment_id": "dep_123",
         "group_count": 100,
         "idp": "cognito",
         "user_count": 10
       },
       "timestamp": "2009-11-10T23:00:00Z",
-      "type": "track"
+      "type": "track",
+      "userId": "dep_123"
     }
   ],
   "context": {

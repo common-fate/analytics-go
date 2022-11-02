@@ -11,6 +11,10 @@ type payloader interface {
 	payloads() []acore.Message
 }
 
+type deploymentEventer interface {
+	deploymentEvent() bool
+}
+
 // Track an event using the global analytics client.
 func (c *Client) Track(e Event) {
 	e = hashValues(e)
@@ -39,7 +43,14 @@ func (c *Client) Track(e Event) {
 
 	enqueueAndLog(c.coreclient, evt)
 
-	if uid != "" {
+	// if true, don't identify the user.
+	var isDeploymentEvent bool
+
+	if d, ok := e.(deploymentEventer); ok {
+		isDeploymentEvent = d.deploymentEvent()
+	}
+
+	if uid != "" && !isDeploymentEvent {
 		enqueueAndLog(c.coreclient, acore.Identify{
 			UserId: uid,
 			Traits: acore.NewTraits().Set("user_id", uid),
