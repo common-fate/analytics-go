@@ -12,6 +12,7 @@ type RuleUpdated struct {
 	Provider              string `json:"provider"`
 	MaxDurationSeconds    int    `json:"max_duration_seconds"`
 	RequiresApproval      bool   `json:"requires_approval"`
+	OptionCount           int    `json:"option_count"`
 }
 
 func (r *RuleUpdated) userID() string { return r.UpdatedBy }
@@ -29,5 +30,6 @@ func (r *RuleUpdated) fixture() {
 		Provider:              "commonfate/test-provider@v1",
 		MaxDurationSeconds:    100,
 		RequiresApproval:      true,
+		OptionCount:           5,
 	}
 }

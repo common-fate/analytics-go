@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/common-fate/analytics-go/acore"
+	"github.com/segmentio/ksuid"
 	"go.uber.org/zap"
 )
 
@@ -19,12 +20,19 @@ type Client struct {
 	mu         *sync.Mutex
 	deployment *Deployment
 	coreclient acore.Client
+
+	// A function called by the client to generate unique message identifiers.
+	// The client uses a UUID generator if none is provided.
+	// This field is not exported and only exposed internally to let unit tests
+	// mock the id generation.
+	uid func() string
 }
 
 func newClient(coreclient acore.Client) *Client {
 	return &Client{
 		mu:         &sync.Mutex{},
 		coreclient: coreclient,
+		uid:        func() string { return ksuid.New().String() },
 	}
 }
 

@@ -11,11 +11,9 @@ import (
 // If you're editing this make sure you edit the Traits()
 // method to ensure the properties propagate.
 type Deployment struct {
-	ID         string `json:"id"`
-	Version    string `json:"version"`
-	UserCount  int    `json:"user_count"`
-	GroupCount int    `json:"group_count"`
-	Stage      string `json:"stage"` // dev, prod, uat, etc.
+	ID      string `json:"id"`
+	Version string `json:"version"`
+	Stage   string `json:"stage"` // dev, prod, uat, etc.
 }
 
 // Traits returns the traits to use for the group identifier
@@ -23,8 +21,6 @@ func (d Deployment) Traits() acore.Traits {
 
 	t := acore.NewTraits().
 		Set("version", d.Version).
-		Set("user_count", d.UserCount).
-		Set("group_count", d.GroupCount).
 		Set("groupType", "deployment").
 		Set("id", d.ID)
 

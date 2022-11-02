@@ -51,10 +51,9 @@ func TestEventsSuite(t *testing.T) {
 			event:       e,
 			// always use this as an example deployment.
 			deployment: &Deployment{
-				ID:         "dep_123",
-				Version:    "v0.9.0",
-				UserCount:  100,
-				GroupCount: 10,
+				ID:      "dep_123",
+				Version: "v0.9.0",
+				Stage:   "test",
 			},
 		}
 
@@ -84,6 +83,7 @@ func TestEventsSuite(t *testing.T) {
 			})
 
 			c := newClient(client)
+			c.uid = func() string { return "KSUID" }
 			c.SetDeployment(tt.deployment)
 			c.Track(tt.event)
 			c.Close()

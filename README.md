@@ -8,6 +8,7 @@ All events emitted are listed in the below table. Discussion of these is welcome
 
 | Name | Emitted When | Example Data |
 | ---- | ----------- | ------------ |
+| `cf:idp.synced` | IDP was synced | [./fixtures/cf-idp-synced.json](./fixtures/cf-idp-synced.json) |
 | `cf:request.created` | Access Request was created | [./fixtures/cf-request-created.json](./fixtures/cf-request-created.json) |
 | `cf:request.reviewed` | Access Request was reviewed | [./fixtures/cf-request-reviewed.json](./fixtures/cf-request-reviewed.json) |
 | `cf:request.revoked` | Access Request was revoked | [./fixtures/cf-request-revoked.json](./fixtures/cf-request-revoked.json) |

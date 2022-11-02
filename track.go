@@ -14,15 +14,22 @@ func (c *Client) Track(e Event) {
 	typ := e.Type()
 
 	evt := acore.Track{
-		UserId:     uid,
 		Event:      typ,
 		Properties: e,
+		UserId:     uid,
 	}
+
+	// generate an anonymous ID if there is no user ID.
+	if uid == "" {
+		evt.AnonymousId = c.uid()
+	}
+
 	if c.deployment != nil {
 		enqueueAndLog(c.coreclient, acore.Group{
-			GroupId: c.deployment.ID,
-			Traits:  c.deployment.Traits(),
-			UserId:  uid,
+			GroupId:     c.deployment.ID,
+			Traits:      c.deployment.Traits(),
+			UserId:      evt.UserId,
+			AnonymousId: evt.AnonymousId, // one of UserId or AnonymousId will be set.
 		})
 	}
 

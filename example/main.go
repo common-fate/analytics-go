@@ -13,10 +13,8 @@ func main() {
 	zap.ReplaceGlobals(log)
 
 	c.SetDeployment(&analytics.Deployment{
-		ID:         "dep_123",
-		Version:    "v0.0.0",
-		UserCount:  10,
-		GroupCount: 10,
+		ID:      "dep_123",
+		Version: "v0.0.0",
 	})
 
 	c.Track(&analytics.RequestCreated{
