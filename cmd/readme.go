@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"sort"
 
 	"github.com/common-fate/analytics-go"
 	"github.com/common-fate/analytics-go/internal"
@@ -39,6 +40,10 @@ func main() {
 		}
 		events = append(events, evt)
 	}
+
+	sort.SliceStable(events, func(i, j int) bool {
+		return events[i].Name < events[j].Name
+	})
 
 	f, err := os.OpenFile("README.md", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
