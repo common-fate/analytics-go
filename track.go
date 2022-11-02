@@ -7,17 +7,11 @@ import (
 	"go.uber.org/zap"
 )
 
-// Event is a product analytics event that is tracked.
-type Event interface {
-	userID() string
-	eventType() string
-}
-
 // Track an event using the global analytics client.
 func (c *Client) Track(e Event) {
 	e = hashValues(e)
 	uid := e.userID()
-	typ := e.eventType()
+	typ := e.Type()
 
 	evt := acore.Track{
 		UserId:     uid,

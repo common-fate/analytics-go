@@ -28,13 +28,6 @@ func newClient(coreclient acore.Client) *Client {
 	}
 }
 
-// var (
-// 	// globalMu locks concurrent access to the global client.
-// 	globalMu sync.RWMutex
-// 	// call analytics.Configure() to set up the client.
-// 	globalClient Client = &acore.NoopClient{}
-// )
-
 var (
 	// Disabled disables analytics altogether.
 	Disabled = Config{
@@ -79,7 +72,7 @@ func (debugCallback) Failure(m acore.Message, err error) {
 	}
 }
 
-// New the global analytics client.
+// New creates an analytics client.
 // Usage:
 //
 //	analytics.New(analytics.Development)
@@ -108,41 +101,27 @@ func New(c Config) *Client {
 	return newClient(client)
 }
 
-// NewFromEnv sets up the global analytics client based on the following
+// NewFromEnv sets up the analytics client based on the following
 // parameters:
 //
 // - URL is CF_ANALYTICS_URL, or falls back to the default URL if not provided
 // - Disabled if CF_ANALYTICS_DISABLED is true
-func NewFromEnv() *Client {
-	return New(Config{
+func Env() Config {
+	return Config{
 		Endpoint: endpointOrDefault(os.Getenv("CF_ANALYTICS_URL")),
 		Enabled:  strings.ToLower(os.Getenv("CF_ANALYTICS_DISABLED")) != "true",
 		Verbose:  strings.ToLower(os.Getenv("CF_ANALYTICS_DEBUG")) == "true",
-	})
+	}
 }
 
-// Config is configuration for the global analytics client.
+// Config is configuration for the analytics client.
 type Config struct {
 	Endpoint string `json:"endpoint"`
 	Enabled  bool   `json:"enabled"`
 	Verbose  bool   `json:"verbose"`
 }
 
-// // G returns the global client.
-// func G() acore.Client {
-// 	globalMu.RLock()
-// 	s := globalClient
-// 	globalMu.RUnlock()
-// 	return s
-// }
-
-// func ReplaceGlobal(c acore.Client) {
-// 	globalMu.Lock()
-// 	globalClient = c
-// 	globalMu.Unlock()
-// }
-
-// Close the global client.
+// Close the client.
 func (c *Client) Close() {
 	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
 		zap.L().Named("cf-analytics").Info("closing analytics client", zap.String("url", c.coreclient.EndpointURL()))

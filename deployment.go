@@ -20,13 +20,19 @@ type Deployment struct {
 
 // Traits returns the traits to use for the group identifier
 func (d Deployment) Traits() acore.Traits {
-	return acore.NewTraits().
+
+	t := acore.NewTraits().
 		Set("version", d.Version).
 		Set("user_count", d.UserCount).
 		Set("group_count", d.GroupCount).
-		Set("stage", d.Stage).
 		Set("groupType", "deployment").
 		Set("id", d.ID)
+
+	if d.Stage != "" {
+		t = t.Set("stage", d.Stage)
+	}
+
+	return t
 }
 
 // SetDeployment sets deployment information.

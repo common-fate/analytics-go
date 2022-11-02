@@ -22,7 +22,7 @@ func main() {
 	c.Track(&analytics.RequestCreated{
 		RequestedBy: "usr_123",
 		Provider:    "commonfate/test-provider@v1",
-		Rule:        "rul_123",
+		RuleID:      "rul_123",
 		Timing: analytics.Timing{
 			DurationSeconds: 100,
 			Mode:            analytics.TimingModeASAP,

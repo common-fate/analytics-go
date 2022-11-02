@@ -28,7 +28,7 @@
         "requested_by": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",
         "review": "APPROVE",
         "reviewed_by": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0",
-        "rule": "rul_LNS4E5we6G3DpSsY2DnEu8coV7azNnjuUztaQ5SW0jo",
+        "rule_id": "rul_LNS4E5we6G3DpSsY2DnEu8coV7azNnjuUztaQ5SW0jo",
         "timing": {
           "duration_seconds": 100,
           "mode": "asap"
