@@ -23,7 +23,7 @@ func (d *DeploymentInfo) Type() string { return "cf:groupidentify:deployment" }
 
 func (d *DeploymentInfo) EmittedWhen() string { return "Deployment updated" }
 
-func (d *DeploymentInfo) marshalEvent() ([]acore.Message, error) {
+func (d *DeploymentInfo) marshalEvent(ctx marshalContext) ([]acore.Message, error) {
 	m := []acore.Message{acore.GroupIdentify{
 		Type:       "deployment",
 		Key:        d.ID,

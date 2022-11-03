@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/common-fate/analytics-go/acore"
-	"github.com/segmentio/ksuid"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 const (
@@ -20,19 +20,24 @@ type Client struct {
 	mu           *sync.Mutex
 	deploymentID *string
 	coreclient   acore.Client
-
-	// A function called by the client to generate unique message identifiers.
-	// The client uses a UUID generator if none is provided.
-	// This field is not exported and only exposed internally to let unit tests
-	// mock the id generation.
-	uid func() string
+	log          *zap.Logger
+	// OnFailure is a callback fired if events are failed to be dispatched.
+	OnFailure func(e Event)
 }
 
-func newClient(coreclient acore.Client) *Client {
+func logLevelFromEnv() zapcore.Level {
+	l, err := zapcore.ParseLevel(os.Getenv("CF_ANALYTICS_LOG_LEVEL"))
+	if err != nil {
+		return zap.PanicLevel
+	}
+	return l
+}
+
+func newClient(coreclient acore.Client, log *zap.Logger) *Client {
 	return &Client{
 		mu:         &sync.Mutex{},
 		coreclient: coreclient,
-		uid:        func() string { return "anon_" + ksuid.New().String() },
+		log:        log,
 	}
 }
 
@@ -66,47 +71,32 @@ func endpointOrDefault(endpoint string) string {
 	return endpoint
 }
 
-type debugCallback struct{}
-
-func (debugCallback) Success(m acore.APIMessage) {
-	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
-		zap.L().Named("cf-analytics").Info("event success", zap.Any("event", m))
-	}
-}
-
-func (debugCallback) Failure(m acore.APIMessage, err error) {
-	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
-		zap.L().Named("cf-analytics").Error("event failure", zap.Any("event", m), zap.Error(err))
-	}
-}
-
 // New creates an analytics client.
 // Usage:
 //
 //	analytics.New(analytics.Development)
 func New(c Config) *Client {
+	log := zap.New(zapcore.NewCore(zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), os.Stderr, logLevelFromEnv())).Named("cf-analytics")
+
 	// create a no-op client if analytics are disabled.
 	if !c.Enabled {
-		return newClient(&acore.NoopClient{})
+		return newClient(&acore.NoopClient{}, log)
 	}
 
 	client, err := acore.NewWithConfig(acore.Config{
 		Endpoint:  c.Endpoint,
-		Callback:  debugCallback{},
 		Verbose:   c.Verbose,
 		Interval:  time.Millisecond * 50,
 		BatchSize: 3,
 	})
 	if err != nil {
-		zap.L().Named("cf-analytics").Error("error setting client", zap.Error(err))
-		return newClient(&acore.NoopClient{})
+		log.Error("error setting client", zap.Error(err))
+		return newClient(&acore.NoopClient{}, log)
 	}
 
-	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
-		zap.L().Named("cf-analytics").Info("configured analytics client", zap.Any("config", c))
-	}
+	log.Debug("configured analytics client", zap.Any("config", c))
 
-	return newClient(client)
+	return newClient(client, log)
 }
 
 // NewFromEnv sets up the analytics client based on the following
@@ -118,7 +108,7 @@ func Env() Config {
 	return Config{
 		Endpoint: endpointOrDefault(os.Getenv("CF_ANALYTICS_URL")),
 		Enabled:  strings.ToLower(os.Getenv("CF_ANALYTICS_DISABLED")) != "true",
-		Verbose:  strings.ToLower(os.Getenv("CF_ANALYTICS_DEBUG")) == "true",
+		Verbose:  strings.ToLower(os.Getenv("CF_ANALYTICS_LOG_LEVEL")) == "debug",
 	}
 }
 
@@ -131,13 +121,11 @@ type Config struct {
 
 // Close the client.
 func (c *Client) Close() {
-	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
-		zap.L().Named("cf-analytics").Info("closing analytics client", zap.String("url", c.coreclient.EndpointURL()))
-	}
+	c.log.Debug("closing analytics client", zap.String("url", c.coreclient.EndpointURL()))
 
 	err := c.coreclient.Close()
 	if err != nil {
-		zap.L().Named("cf-analytics").Error("error closing client", zap.Error(err))
+		c.log.Error("error closing client", zap.Error(err))
 	}
 }
 
@@ -150,7 +138,5 @@ func (c *Client) SetDeploymentID(depID string) {
 	defer c.mu.Unlock()
 	c.deploymentID = &depID
 
-	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
-		zap.L().Named("cf-analytics").Info("set deployment", zap.Any("deployment.id", depID))
-	}
+	c.log.Debug("set deployment", zap.Any("deployment.id", depID))
 }

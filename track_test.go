@@ -23,7 +23,6 @@ func TestClient_marshalToCapture(t *testing.T) {
 		mu           *sync.Mutex
 		deploymentID string
 		coreclient   acore.Client
-		uid          func() string
 	}
 	type args struct {
 		e Event
@@ -63,7 +62,6 @@ func TestClient_marshalToCapture(t *testing.T) {
 				mu:           tt.fields.mu,
 				deploymentID: &tt.fields.deploymentID,
 				coreclient:   tt.fields.coreclient,
-				uid:          tt.fields.uid,
 			}
 			got, err := c.marshalToCapture(tt.args.e)
 			if (err != nil) != tt.wantErr {

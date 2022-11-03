@@ -29,7 +29,7 @@ func (d *UserInfo) Type() string { return "cf:identify:user_info" }
 
 func (d *UserInfo) EmittedWhen() string { return "Access Request created/updated" }
 
-func (d *UserInfo) marshalEvent() ([]acore.Message, error) {
+func (d *UserInfo) marshalEvent(ctx marshalContext) ([]acore.Message, error) {
 	// role is populated automatically based on IsAdmin.
 	// In future we might have additional role types rather than
 	// just 'admin' and 'end user'
@@ -43,10 +43,16 @@ func (d *UserInfo) marshalEvent() ([]acore.Message, error) {
 		return nil, errors.New("could not hash user ID")
 	}
 
-	m := []acore.Message{acore.Identify{
+	id := acore.Identify{
 		DistinctId: uid,
 		Properties: eventToProperties(d).Set("role", role),
-	}}
+	}
+
+	if ctx.DeploymentID != nil {
+		id.Properties.Set("$groups", acore.NewProperties().Set("deployment", *ctx.DeploymentID))
+	}
+
+	m := []acore.Message{id}
 
 	return m, nil
 }

@@ -10,12 +10,11 @@ type Capture struct {
 	// the application, its value is always overwritten by the library.
 	Type string
 
-	DistinctId       string
-	Event            string
-	Timestamp        time.Time
-	Properties       Properties
-	Groups           Groups
-	SendFeatureFlags bool
+	DistinctId string
+	Event      string
+	Timestamp  time.Time
+	Properties Properties
+	Groups     Groups
 }
 
 func (msg Capture) internal() {
@@ -31,13 +30,13 @@ func (msg Capture) Validate() error {
 		}
 	}
 
-	// if len(msg.DistinctId) == 0 {
-	// 	return FieldError{
-	// 		Type:  "analytics.Capture",
-	// 		Name:  "DistinctId",
-	// 		Value: msg.DistinctId,
-	// 	}
-	// }
+	if len(msg.DistinctId) == 0 {
+		return FieldError{
+			Type:  "analytics.Capture",
+			Name:  "DistinctId",
+			Value: msg.DistinctId,
+		}
+	}
 
 	return nil
 }

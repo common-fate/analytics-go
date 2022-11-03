@@ -2,6 +2,9 @@
   "batch": [
     {
       "$set": {
+        "$groups": {
+          "deployment": "dep_123"
+        },
         "group_count": 2,
         "role": "admin"
       },

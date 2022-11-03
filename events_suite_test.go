@@ -15,6 +15,7 @@ import (
 	"github.com/common-fate/analytics-go/acore"
 	"github.com/common-fate/analytics-go/internal"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap/zaptest"
 )
 
 // if -update is provided, the fixture files will be updated.
@@ -76,7 +77,10 @@ func TestEventsSuite(t *testing.T) {
 			})
 
 			c := newClient(client)
-			c.uid = func() string { return "KSUID" }
+			c.log = zaptest.NewLogger(t)
+			c.OnFailure = func(e Event) {
+				t.Fatalf("failed sending event: %s", e.Type())
+			}
 			c.SetDeploymentID("dep_123")
 			c.Track(tt.event)
 			c.Close()
