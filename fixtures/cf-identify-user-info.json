@@ -2,6 +2,7 @@
   "batch": [
     {
       "$set": {
+        "available_rules": 1,
         "group_count": 2,
         "role": "admin"
       },

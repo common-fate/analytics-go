@@ -18,9 +18,10 @@ const (
 )
 
 type UserInfo struct {
-	ID         string `json:"-"`
-	GroupCount int    `json:"group_count"`
-	IsAdmin    bool   `json:"-"`
+	ID             string `json:"-"`
+	GroupCount     int    `json:"group_count"`
+	IsAdmin        bool   `json:"-"`
+	AvailableRules int    `json:"available_rules,omitempty"`
 }
 
 func (d *UserInfo) userID() string { return "" }
@@ -59,8 +60,9 @@ func (d *UserInfo) marshalEvent(ctx marshalContext) ([]acore.Message, error) {
 
 func (d *UserInfo) fixture() {
 	*d = UserInfo{
-		ID:         "usr_123",
-		IsAdmin:    true,
-		GroupCount: 2,
+		ID:             "usr_123",
+		IsAdmin:        true,
+		GroupCount:     2,
+		AvailableRules: 1,
 	}
 }
