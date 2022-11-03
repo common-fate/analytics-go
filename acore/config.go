@@ -50,9 +50,6 @@ type Config struct {
 	// to its logger.
 	Verbose bool
 
-	// The default context set on each message sent by the client.
-	DefaultContext *Context
-
 	// The retry policy used by the client to resend requests that have failed.
 	// The function is called with how many times the operation has been retried
 	// and is expected to return how long the client should wait before trying
@@ -77,12 +74,6 @@ type Config struct {
 	// This field is not exported and only exposed internally to let unit tests
 	// mock the current time.
 	maxConcurrentRequests int
-
-	// Maximum bytes in a message
-	MaxMessageBytes int
-
-	// Maximum bytes in a batch
-	MaxBatchBytes int
 }
 
 // This constant sets the default endpoint to which client instances send
@@ -117,22 +108,6 @@ func (c *Config) validate() error {
 		}
 	}
 
-	if c.MaxMessageBytes < 0 {
-		return ConfigError{
-			Reason: "negetive value is not supported for MaxMessageBytes",
-			Field:  "MaxMessageBytes",
-			Value:  c.MaxMessageBytes,
-		}
-	}
-
-	if c.MaxBatchBytes < 0 {
-		return ConfigError{
-			Reason: "negetive value is not supported for MaxBatchBytes",
-			Field:  "MaxBatchBytes",
-			Value:  c.MaxBatchBytes,
-		}
-	}
-
 	return nil
 }
 
@@ -159,10 +134,6 @@ func makeConfig(c Config) Config {
 		c.BatchSize = DefaultBatchSize
 	}
 
-	if c.DefaultContext == nil {
-		c.DefaultContext = &Context{}
-	}
-
 	if c.RetryAfter == nil {
 		c.RetryAfter = DefaultBacko().Duration
 	}
@@ -179,20 +150,6 @@ func makeConfig(c Config) Config {
 		c.maxConcurrentRequests = 1000
 	}
 
-	if c.MaxMessageBytes == 0 {
-		c.MaxMessageBytes = defMaxMessageBytes
-	}
-
-	if c.MaxBatchBytes == 0 {
-		c.MaxBatchBytes = defMaxBatchBytes
-	}
-
-	// We always overwrite the 'library' field of the default context set on the
-	// client because we want this information to be accurate.
-	c.DefaultContext.Library = LibraryInfo{
-		Name:    "cf-analytics-go",
-		Version: getLibraryVersion(),
-	}
 	return c
 }
 

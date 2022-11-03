@@ -19,35 +19,27 @@ type Callback interface {
 
 	// This method is called for every message that was successfully sent to
 	// the API.
-	Success(Message)
+	Success(APIMessage)
 
 	// This method is called for every message that failed to be sent to the
 	// API and will be discarded by the client.
-	Failure(Message, error)
+	Failure(APIMessage, error)
 }
 
 // This interface is used to represent analytics objects that can be sent via
 // a client.
 //
-// Types like analytics.Track, analytics.Page, etc... implement this interface
+// Types like analytics.Capture, analytics.Alias, etc... implement this interface
 // and therefore can be passed to the analytics.Client.Send method.
 type Message interface {
 
 	// Validate validates the internal structure of the message, the method must return
 	// nil if the message is valid, or an error describing what went wrong.
 	Validate() error
+	APIfy() APIMessage
 
 	// internal is an unexposed interface function to ensure only types defined within this package can satisfy the Message interface. Invoking this method will panic.
 	internal()
-}
-
-// Takes a message id as first argument and returns it, unless it's the zero-
-// value, in that case the default id passed as second argument is returned.
-func makeMessageId(id string, def string) string {
-	if len(id) == 0 {
-		return def
-	}
-	return id
 }
 
 // Returns the time value passed as first argument, unless it's the zero-value,
@@ -59,22 +51,21 @@ func makeTimestamp(t time.Time, def time.Time) time.Time {
 	return t
 }
 
-// This structure represents objects sent to the /v1/batch endpoint. We don't
+// This structure represents objects sent to the /batch/ endpoint. We don't
 // export this type because it's only meant to be used internally to send groups
 // of messages in one API call.
 type batch struct {
-	MessageId string    `json:"messageId"`
-	SentAt    time.Time `json:"sentAt"`
-	Messages  []message `json:"batch"`
-	Context   *Context  `json:"context"`
+	Messages []message `json:"batch"`
 }
 
+type APIMessage interface{}
+
 type message struct {
-	msg  Message
+	msg  APIMessage
 	json []byte
 }
 
-func makeMessage(m Message, maxBytes int) (msg message, err error) {
+func makeMessage(m APIMessage, maxBytes int) (msg message, err error) {
 	if msg.json, err = json.Marshal(m); err == nil {
 		if len(msg.json) > maxBytes {
 			err = ErrMessageTooBig
@@ -126,6 +117,6 @@ func (q *messageQueue) flush() (msgs []message) {
 }
 
 const (
-	defMaxBatchBytes   = 500000 // ~500 KB
-	defMaxMessageBytes = 32000  // ~32 KB
+	maxBatchBytes   = 500000
+	maxMessageBytes = 32000
 )

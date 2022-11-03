@@ -8,7 +8,8 @@ All events emitted are listed in the below table. Discussion of these is welcome
 
 | Name | Emitted When | Example Data |
 | ---- | ----------- | ------------ |
-| `cf:idp.synced` | IDP was synced | [./fixtures/cf-idp-synced.json](./fixtures/cf-idp-synced.json) |
+| `cf:groupidentify:deployment` | Deployment updated | [./fixtures/cf-groupidentify-deployment.json](./fixtures/cf-groupidentify-deployment.json) |
+| `cf:identify:user_info` | Access Request created/updated | [./fixtures/cf-identify-user-info.json](./fixtures/cf-identify-user-info.json) |
 | `cf:request.created` | Access Request was created | [./fixtures/cf-request-created.json](./fixtures/cf-request-created.json) |
 | `cf:request.reviewed` | Access Request was reviewed | [./fixtures/cf-request-reviewed.json](./fixtures/cf-request-reviewed.json) |
 | `cf:request.revoked` | Access Request was revoked | [./fixtures/cf-request-revoked.json](./fixtures/cf-request-revoked.json) |
@@ -19,7 +20,7 @@ All events emitted are listed in the below table. Discussion of these is welcome
 
 ## Usage
 
-The `acore` package contains the core analytics client. The client is forked from the Rudderstack Go client (which itself appears to have been forked from Segment's Go SDK).
+The `acore` package contains the core analytics client. The client is forked from the PostHog Go client (which itself appears to have been forked from Segment's Go SDK).
 
 The library handles client-side hashing identifiers such as `usr_123`. We transform `usr_123` using a SHA256 hash into `usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4` prior to events being dispatched. In the library this is controlled by the `analytics:"usr"` struct tag added to the event.
 

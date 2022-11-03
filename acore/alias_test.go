@@ -2,9 +2,9 @@ package acore
 
 import "testing"
 
-func TestAliasMissingUserId(t *testing.T) {
+func TestAliasMissingDistinctId(t *testing.T) {
 	alias := Alias{
-		PreviousId: "1",
+		Alias: "1",
 	}
 
 	if err := alias.Validate(); err == nil {
@@ -15,16 +15,16 @@ func TestAliasMissingUserId(t *testing.T) {
 
 	} else if e != (FieldError{
 		Type:  "analytics.Alias",
-		Name:  "UserId",
+		Name:  "DistinctId",
 		Value: "",
 	}) {
 		t.Error("invalid error value returned when validating alias:", err)
 	}
 }
 
-func TestAliasMissingPreviousId(t *testing.T) {
+func TestAliasMissingAlias(t *testing.T) {
 	alias := Alias{
-		UserId: "1",
+		DistinctId: "1",
 	}
 
 	if err := alias.Validate(); err == nil {
@@ -35,7 +35,7 @@ func TestAliasMissingPreviousId(t *testing.T) {
 
 	} else if e != (FieldError{
 		Type:  "analytics.Alias",
-		Name:  "PreviousId",
+		Name:  "Alias",
 		Value: "",
 	}) {
 		t.Error("invalid error value returned when validating alias:", err)
@@ -44,8 +44,8 @@ func TestAliasMissingPreviousId(t *testing.T) {
 
 func TestAliasValid(t *testing.T) {
 	alias := Alias{
-		PreviousId: "1",
-		UserId:     "2",
+		Alias:      "1",
+		DistinctId: "2",
 	}
 
 	if err := alias.Validate(); err != nil {

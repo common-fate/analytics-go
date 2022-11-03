@@ -1,0 +1,24 @@
+{
+  "batch": [
+    {
+      "distinct_id": "$deployment_dep_123",
+      "event": "$groupidentify",
+      "library": "cf-analytics-go",
+      "library_version": "dev",
+      "properties": {
+        "$group_key": "dep_123",
+        "$group_set": {
+          "group_count": 5,
+          "idp": "cognito",
+          "stage": "test",
+          "user_count": 10,
+          "version": "v0.9.0"
+        },
+        "$group_type": "deployment",
+        "$lib": "cf-analytics-go",
+        "$lib_version": "dev"
+      },
+      "timestamp": "2009-11-10T23:00:00Z"
+    }
+  ]
+}

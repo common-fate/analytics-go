@@ -12,13 +12,10 @@ func main() {
 	log := zap.Must(zap.NewDevelopment())
 	zap.ReplaceGlobals(log)
 
-	c.SetDeployment(&analytics.Deployment{
-		ID:      "dep_100",
-		Version: "v0.0.0",
-	})
+	c.SetDeploymentID("dep_101")
 
 	c.Track(&analytics.RequestCreated{
-		RequestedBy: "usr_500",
+		RequestedBy: "usr_501",
 		Provider:    "commonfate/test-provider@v1",
 		RuleID:      "rul_123",
 		Timing: analytics.Timing{
@@ -28,9 +25,18 @@ func main() {
 		HasReason: true,
 	})
 
-	c.Track(&analytics.IDPSynced{
-		UserCount:  0,
-		GroupCount: 0,
+	c.Track(&analytics.UserInfo{
+		ID:         "usr_501",
+		IsAdmin:    false,
+		GroupCount: 5,
+	})
+
+	c.Track(&analytics.DeploymentInfo{
+		ID:         "dep_101",
+		Version:    "v0.0.0",
+		UserCount:  10,
+		GroupCount: 1,
 		IDP:        "cognito",
+		Stage:      "dev",
 	})
 }

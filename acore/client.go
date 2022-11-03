@@ -45,7 +45,7 @@ type client struct {
 	// This channel is where the `Enqueue` method writes messages so they can be
 	// picked up and pushed by the backend goroutine taking care of applying the
 	// batching rules.
-	msgs chan Message
+	msgs chan APIMessage
 
 	// These two channels are used to synchronize the client shutting down when
 	// `Close` is called.
@@ -81,7 +81,7 @@ func NewWithConfig(config Config) (cli Client, err error) {
 
 	c := &client{
 		Config:   makeConfig(config),
-		msgs:     make(chan Message, 100),
+		msgs:     make(chan APIMessage, 100),
 		quit:     make(chan struct{}),
 		shutdown: make(chan struct{}),
 		http: http.Client{
@@ -106,77 +106,26 @@ func (c *client) Enqueue(msg Message) (err error) {
 		return
 	}
 
-	var id = c.uid()
 	var ts = c.now()
 
 	switch m := msg.(type) {
 	case Alias:
 		m.Type = "alias"
-		m.MessageId = makeMessageId(m.MessageId, id)
 		m.Timestamp = makeTimestamp(m.Timestamp, ts)
-		// if m.Context == nil {
-		// 	m.Context = makeContext()
-		// }
-		msg = m
-
-	case Group:
-		m.Type = "group"
-		m.MessageId = makeMessageId(m.MessageId, id)
-		// if m.AnonymousId == "" {
-		// 	m.AnonymousId = makeAnonymousId(m.UserId)
-		// }
-		m.Timestamp = makeTimestamp(m.Timestamp, ts)
-		// if m.Context == nil {
-		// 	m.Context = makeContext()
-		// }
 		msg = m
 
 	case Identify:
 		m.Type = "identify"
-		m.MessageId = makeMessageId(m.MessageId, id)
-		// if m.AnonymousId == "" {
-		// 	m.AnonymousId = makeAnonymousId(m.UserId)
-		// }
 		m.Timestamp = makeTimestamp(m.Timestamp, ts)
-		// if m.Context == nil {
-		// 	m.Context = makeContext()
-		// }
 		msg = m
 
-	case Page:
-		m.Type = "page"
-		m.MessageId = makeMessageId(m.MessageId, id)
-		// if m.AnonymousId == "" {
-		// 	m.AnonymousId = makeAnonymousId(m.UserId)
-		// }
+	case GroupIdentify:
 		m.Timestamp = makeTimestamp(m.Timestamp, ts)
-		// if m.Context == nil {
-		// 	m.Context = makeContext()
-		// }
 		msg = m
 
-	case Screen:
-		m.Type = "screen"
-		m.MessageId = makeMessageId(m.MessageId, id)
-		// if m.AnonymousId == "" {
-		// 	m.AnonymousId = makeAnonymousId(m.UserId)
-		// }
+	case Capture:
+		m.Type = "capture"
 		m.Timestamp = makeTimestamp(m.Timestamp, ts)
-		// if m.Context == nil {
-		// 	m.Context = makeContext()
-		// }
-		msg = m
-
-	case Track:
-		m.Type = "track"
-		m.MessageId = makeMessageId(m.MessageId, id)
-		// if m.AnonymousId == "" {
-		// 	m.AnonymousId = makeAnonymousId(m.UserId)
-		// }
-		m.Timestamp = makeTimestamp(m.Timestamp, ts)
-		// if m.Context == nil {
-		// 	m.Context = makeContext()
-		// }
 		msg = m
 
 	default:
@@ -194,7 +143,8 @@ func (c *client) Enqueue(msg Message) (err error) {
 		}
 	}()
 
-	c.msgs <- msg
+	c.msgs <- msg.APIfy()
+
 	return
 }
 
@@ -281,10 +231,7 @@ func (c *client) send(msgs []message) {
 	const attempts = 10
 
 	b, err := json.Marshal(batch{
-		MessageId: c.uid(),
-		SentAt:    c.now(),
-		Messages:  msgs,
-		Context:   c.DefaultContext,
+		Messages: msgs,
 	})
 
 	if err != nil {
@@ -322,7 +269,7 @@ func (c *client) upload(b []byte) error {
 		return err
 	}
 
-	version := getLibraryVersion()
+	version := getVersion()
 
 	req.Header.Add("User-Agent", "cf-analytics-go (version: "+version+")")
 	req.Header.Add("Content-Type", "application/json")
@@ -357,11 +304,11 @@ func (c *client) report(res *http.Response) (err error) {
 	return fmt.Errorf("%d %s", res.StatusCode, res.Status)
 }
 
-func (c *client) push(q *messageQueue, m Message, wg *sync.WaitGroup, ex *executor) {
+func (c *client) push(q *messageQueue, m APIMessage, wg *sync.WaitGroup, ex *executor) {
 	var msg message
 	var err error
 
-	if msg, err = makeMessage(m, c.MaxMessageBytes); err != nil {
+	if msg, err = makeMessage(m, maxMessageBytes); err != nil {
 		c.Errorf("%s - %v", err, m)
 		c.notifyFailure([]message{{m, nil}}, err)
 		return
@@ -400,7 +347,7 @@ func (c *client) maxBatchBytes() int {
 	b, _ := json.Marshal(batch{
 		Messages: []message{},
 	})
-	return c.MaxBatchBytes - len(b)
+	return maxBatchBytes - len(b)
 }
 
 func (c *client) notifySuccess(msgs []message) {

@@ -4,20 +4,15 @@ import "time"
 
 var _ Message = (*Identify)(nil)
 
-// This type represents object sent in an identify call as described in
-
+// This type represents object sent in an identify call
 type Identify struct {
 	// This field is exported for serialization purposes and shouldn't be set by
 	// the application, its value is always overwritten by the library.
-	Type string `json:"type,omitempty"`
+	Type string
 
-	MessageId    string       `json:"messageId,omitempty"`
-	AnonymousId  string       `json:"anonymousId,omitempty"`
-	UserId       string       `json:"userId,omitempty"`
-	Timestamp    time.Time    `json:"timestamp,omitempty"`
-	Context      *Context     `json:"context,omitempty"`
-	Traits       Traits       `json:"traits,omitempty"`
-	Integrations Integrations `json:"integrations,omitempty"`
+	DistinctId string
+	Timestamp  time.Time
+	Properties Properties
 }
 
 func (msg Identify) internal() {
@@ -25,13 +20,45 @@ func (msg Identify) internal() {
 }
 
 func (msg Identify) Validate() error {
-	if len(msg.UserId) == 0 && len(msg.AnonymousId) == 0 {
+	if len(msg.DistinctId) == 0 {
 		return FieldError{
 			Type:  "analytics.Identify",
-			Name:  "UserId",
-			Value: msg.UserId,
+			Name:  "DistinctId",
+			Value: msg.DistinctId,
 		}
 	}
 
 	return nil
+}
+
+type IdentifyInApi struct {
+	Type           string    `json:"type"`
+	Library        string    `json:"library"`
+	LibraryVersion string    `json:"library_version"`
+	Timestamp      time.Time `json:"timestamp"`
+
+	Event      string     `json:"event"`
+	DistinctId string     `json:"distinct_id"`
+	Properties Properties `json:"properties"`
+	Set        Properties `json:"$set"`
+}
+
+func (msg Identify) APIfy() APIMessage {
+	library := "cf-analytics-go"
+
+	myProperties := Properties{}.Set("$lib", library).Set("$lib_version", getVersion())
+
+	apified := IdentifyInApi{
+		Type:           msg.Type,
+		Event:          "$identify",
+		Library:        library,
+		LibraryVersion: getVersion(),
+		Timestamp:      msg.Timestamp,
+		DistinctId:     msg.DistinctId,
+
+		Properties: myProperties,
+		Set:        msg.Properties,
+	}
+
+	return apified
 }

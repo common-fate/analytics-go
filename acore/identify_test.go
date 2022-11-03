@@ -2,7 +2,7 @@ package acore
 
 import "testing"
 
-func TestIdentifyMissingUserId(t *testing.T) {
+func TestIdentifyMissingDistinctId(t *testing.T) {
 	identify := Identify{}
 
 	if err := identify.Validate(); err == nil {
@@ -13,26 +13,16 @@ func TestIdentifyMissingUserId(t *testing.T) {
 
 	} else if e != (FieldError{
 		Type:  "analytics.Identify",
-		Name:  "UserId",
+		Name:  "DistinctId",
 		Value: "",
 	}) {
 		t.Error("invalid error value returned when validating identify:", err)
 	}
 }
 
-func TestIdentifyValidWithUserId(t *testing.T) {
+func TestIdentifyValidWithDistinctId(t *testing.T) {
 	identify := Identify{
-		UserId: "2",
-	}
-
-	if err := identify.Validate(); err != nil {
-		t.Error("validating a valid identify object failed:", identify, err)
-	}
-}
-
-func TestIdentifyValidWithAnonymousId(t *testing.T) {
-	identify := Identify{
-		AnonymousId: "2",
+		DistinctId: "2",
 	}
 
 	if err := identify.Validate(); err != nil {

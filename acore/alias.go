@@ -4,19 +4,15 @@ import "time"
 
 var _ Message = (*Alias)(nil)
 
-// This type represents object sent in a alias call as described in
-
+// This type represents object sent in a alias call
 type Alias struct {
 	// This field is exported for serialization purposes and shouldn't be set by
 	// the application, its value is always overwritten by the library.
-	Type string `json:"type,omitempty"`
+	Type string
 
-	MessageId    string       `json:"messageId,omitempty"`
-	PreviousId   string       `json:"previousId"`
-	UserId       string       `json:"userId"`
-	Timestamp    time.Time    `json:"timestamp,omitempty"`
-	Context      *Context     `json:"context,omitempty"`
-	Integrations Integrations `json:"integrations,omitempty"`
+	Alias      string
+	DistinctId string
+	Timestamp  time.Time
 }
 
 func (msg Alias) internal() {
@@ -24,21 +20,60 @@ func (msg Alias) internal() {
 }
 
 func (msg Alias) Validate() error {
-	if len(msg.UserId) == 0 {
+	if len(msg.DistinctId) == 0 {
 		return FieldError{
 			Type:  "analytics.Alias",
-			Name:  "UserId",
-			Value: msg.UserId,
+			Name:  "DistinctId",
+			Value: msg.DistinctId,
 		}
 	}
 
-	if len(msg.PreviousId) == 0 {
+	if len(msg.Alias) == 0 {
 		return FieldError{
 			Type:  "analytics.Alias",
-			Name:  "PreviousId",
-			Value: msg.PreviousId,
+			Name:  "Alias",
+			Value: msg.Alias,
 		}
 	}
 
 	return nil
+}
+
+type AliasInApiProperties struct {
+	DistinctId string `json:"distinct_id"`
+	Alias      string `json:"alias"`
+	Lib        string `json:"$lib"`
+	LibVersion string `json:"$lib_version"`
+}
+
+type AliasInApi struct {
+	Type           string    `json:"type"`
+	Library        string    `json:"library"`
+	LibraryVersion string    `json:"library_version"`
+	Timestamp      time.Time `json:"timestamp"`
+
+	Properties AliasInApiProperties `json:"properties"`
+
+	Event string `json:"event"`
+}
+
+func (msg Alias) APIfy() APIMessage {
+	library := "cf-analytics-go"
+	libraryVersion := getVersion()
+
+	apified := AliasInApi{
+		Type:           msg.Type,
+		Event:          "$create_alias",
+		Library:        library,
+		LibraryVersion: libraryVersion,
+		Timestamp:      msg.Timestamp,
+		Properties: AliasInApiProperties{
+			DistinctId: msg.DistinctId,
+			Alias:      msg.Alias,
+			Lib:        library,
+			LibVersion: libraryVersion,
+		},
+	}
+
+	return apified
 }

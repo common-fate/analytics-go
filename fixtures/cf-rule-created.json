@@ -1,22 +1,16 @@
 {
   "batch": [
     {
-      "groupId": "dep_123",
-      "messageId": "KSUID",
-      "timestamp": "2009-11-10T23:00:00Z",
-      "traits": {
-        "groupType": "deployment",
-        "id": "dep_123",
-        "stage": "test",
-        "version": "v0.9.0"
-      },
-      "type": "group",
-      "userId": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4"
-    },
-    {
+      "distinct_id": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",
       "event": "cf:rule.created",
-      "messageId": "KSUID",
+      "library": "cf-analytics-go",
+      "library_version": "dev",
       "properties": {
+        "$groups": {
+          "deployment": "dep_123"
+        },
+        "$lib": "cf-analytics-go",
+        "$lib_version": "dev",
         "created_by": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",
         "max_duration_seconds": 100,
         "option_count": 5,
@@ -27,25 +21,7 @@
         "uses_selectable_options": true
       },
       "timestamp": "2009-11-10T23:00:00Z",
-      "type": "track",
-      "userId": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4"
-    },
-    {
-      "messageId": "KSUID",
-      "timestamp": "2009-11-10T23:00:00Z",
-      "traits": {
-        "user_id": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4"
-      },
-      "type": "identify",
-      "userId": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4"
+      "type": "capture"
     }
-  ],
-  "context": {
-    "library": {
-      "name": "cf-analytics-go",
-      "version": "dev"
-    }
-  },
-  "messageId": "KSUID",
-  "sentAt": "2009-11-10T23:00:00Z"
+  ]
 }

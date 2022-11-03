@@ -33,7 +33,6 @@ func TestEventsSuite(t *testing.T) {
 		fixturepath string
 		want        string
 		event       Event
-		deployment  *Deployment
 	}
 
 	var tests []testcase
@@ -49,12 +48,6 @@ func TestEventsSuite(t *testing.T) {
 			name:        e.Type(),
 			fixturepath: f,
 			event:       e,
-			// always use this as an example deployment.
-			deployment: &Deployment{
-				ID:      "dep_123",
-				Version: "v0.9.0",
-				Stage:   "test",
-			},
 		}
 
 		if !*update {
@@ -84,7 +77,7 @@ func TestEventsSuite(t *testing.T) {
 
 			c := newClient(client)
 			c.uid = func() string { return "KSUID" }
-			c.SetDeployment(tt.deployment)
+			c.SetDeploymentID("dep_123")
 			c.Track(tt.event)
 			c.Close()
 

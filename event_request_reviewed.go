@@ -1,7 +1,5 @@
 package analytics
 
-import "github.com/common-fate/analytics-go/acore"
-
 func init() {
 	registerEvent(&RequestReviewed{})
 }
@@ -21,12 +19,12 @@ type RequestReviewed struct {
 	ReviewerIsAdmin bool   `json:"reviewer_is_admin"`
 }
 
-func (r *RequestReviewed) payloads() []acore.Message {
-	return []acore.Message{acore.Identify{
-		UserId: r.ReviewedBy,
-		Traits: acore.NewTraits().Set("role", getRole(r.ReviewerIsAdmin)),
-	}}
-}
+// func (r *RequestReviewed) payloads() []acore.Message {
+// 	return []acore.Message{acore.Identify{
+// 		UserId: r.ReviewedBy,
+// 		Traits: acore.NewTraits().Set("role", getRole(r.ReviewerIsAdmin)),
+// 	}}
+// }
 
 func (r *RequestReviewed) userID() string { return r.ReviewedBy }
 

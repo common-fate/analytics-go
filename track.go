@@ -1,67 +1,67 @@
 package analytics
 
 import (
+	"errors"
 	"os"
 
 	"github.com/common-fate/analytics-go/acore"
 	"go.uber.org/zap"
 )
 
-type payloader interface {
-	payloads() []acore.Message
+type eventMarshaller interface {
+	marshalEvent() ([]acore.Message, error)
 }
 
-type deploymentEventer interface {
-	deploymentEvent() bool
-}
-
-// Track an event using the global analytics client.
+// Track an event using the analytics client.
 func (c *Client) Track(e Event) {
-	e = hashValues(e)
-	uid := e.userID()
-	typ := e.Type()
+	// if the event implements custom marshalling, use it rather than sending a
+	// 'Capture' event.
+	if em, ok := e.(eventMarshaller); ok {
+		events, err := em.marshalEvent()
+		if err != nil && os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
+			zap.L().Named("cf-analytics").Info("error marshalling analytics events", zap.Error(err))
+			return
+		}
 
-	evt := acore.Track{
-		Event:      typ,
-		Properties: e,
-		UserId:     uid,
+		for _, evt := range events {
+			enqueueAndLog(c.coreclient, evt)
+		}
+
+		return
 	}
 
-	// generate an anonymous ID if there is no user ID.
-	if uid == "" {
-		evt.AnonymousId = c.uid()
-	}
-
-	if c.deployment != nil {
-		enqueueAndLog(c.coreclient, acore.Group{
-			GroupId:     c.deployment.ID,
-			Traits:      c.deployment.Traits(),
-			UserId:      evt.UserId,
-			AnonymousId: evt.AnonymousId, // one of UserId or AnonymousId will be set.
-		})
+	evt, err := c.marshalToCapture(e)
+	if err != nil && os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
+		zap.L().Named("cf-analytics").Info("error marshalling event", zap.Error(err))
+		return
 	}
 
 	enqueueAndLog(c.coreclient, evt)
+}
 
-	// if true, don't identify the user.
-	var isDeploymentEvent bool
-
-	if d, ok := e.(deploymentEventer); ok {
-		isDeploymentEvent = d.deploymentEvent()
+// marshalToCapture marshals an Event into an acore.Capture payload to be dispatched.
+func (c *Client) marshalToCapture(e Event) (acore.Capture, error) {
+	uid := e.userID()
+	hashedID, ok := hash(uid, "usr")
+	if !ok {
+		return acore.Capture{}, errors.New("could not hash user ID")
 	}
 
-	if uid != "" && !isDeploymentEvent {
-		enqueueAndLog(c.coreclient, acore.Identify{
-			UserId: uid,
-			Traits: acore.NewTraits().Set("user_id", uid),
-		})
+	typ := e.Type()
+
+	props := eventToProperties(e)
+
+	evt := acore.Capture{
+		Event:      typ,
+		Properties: props,
+		DistinctId: hashedID,
 	}
 
-	if pl, ok := e.(payloader); ok {
-		for _, m := range pl.payloads() {
-			enqueueAndLog(c.coreclient, m)
-		}
+	if c.deploymentID != nil {
+		evt.Groups = acore.NewGroups().Set("deployment", *c.deploymentID)
 	}
+
+	return evt, nil
 }
 
 // enqueueAndLog logs the analytics event using the global zap logger if CF_ANALYTICS_DEBUG is set.

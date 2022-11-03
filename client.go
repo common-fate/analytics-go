@@ -17,9 +17,9 @@ const (
 )
 
 type Client struct {
-	mu         *sync.Mutex
-	deployment *Deployment
-	coreclient acore.Client
+	mu           *sync.Mutex
+	deploymentID *string
+	coreclient   acore.Client
 
 	// A function called by the client to generate unique message identifiers.
 	// The client uses a UUID generator if none is provided.
@@ -68,13 +68,13 @@ func endpointOrDefault(endpoint string) string {
 
 type debugCallback struct{}
 
-func (debugCallback) Success(m acore.Message) {
+func (debugCallback) Success(m acore.APIMessage) {
 	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
 		zap.L().Named("cf-analytics").Info("event success", zap.Any("event", m))
 	}
 }
 
-func (debugCallback) Failure(m acore.Message, err error) {
+func (debugCallback) Failure(m acore.APIMessage, err error) {
 	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
 		zap.L().Named("cf-analytics").Error("event failure", zap.Any("event", m), zap.Error(err))
 	}
@@ -138,5 +138,19 @@ func (c *Client) Close() {
 	err := c.coreclient.Close()
 	if err != nil {
 		zap.L().Named("cf-analytics").Error("error closing client", zap.Error(err))
+	}
+}
+
+// SetDeploymentID sets the deployment ID.
+func (c *Client) SetDeploymentID(depID string) {
+	if depID == "" {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.deploymentID = &depID
+
+	if os.Getenv("CF_ANALYTICS_DEBUG") == "true" {
+		zap.L().Named("cf-analytics").Info("set deployment", zap.Any("deployment.id", depID))
 	}
 }
