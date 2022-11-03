@@ -13,6 +13,7 @@ type Identify struct {
 	DistinctId string
 	Timestamp  time.Time
 	Properties Properties
+	Groups     Groups
 }
 
 func (msg Identify) internal() {
@@ -47,6 +48,10 @@ func (msg Identify) APIfy() APIMessage {
 	library := "cf-analytics-go"
 
 	myProperties := Properties{}.Set("$lib", library).Set("$lib_version", getVersion())
+
+	if msg.Groups != nil {
+		myProperties.Set("$groups", msg.Groups)
+	}
 
 	apified := IdentifyInApi{
 		Type:           msg.Type,

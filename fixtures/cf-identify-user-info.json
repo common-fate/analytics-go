@@ -2,9 +2,6 @@
   "batch": [
     {
       "$set": {
-        "$groups": {
-          "deployment": "dep_123"
-        },
         "group_count": 2,
         "role": "admin"
       },
@@ -13,6 +10,9 @@
       "library": "cf-analytics-go",
       "library_version": "dev",
       "properties": {
+        "$groups": {
+          "deployment": "dep_123"
+        },
         "$lib": "cf-analytics-go",
         "$lib_version": "dev"
       },

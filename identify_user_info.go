@@ -49,7 +49,7 @@ func (d *UserInfo) marshalEvent(ctx marshalContext) ([]acore.Message, error) {
 	}
 
 	if ctx.DeploymentID != nil {
-		id.Properties.Set("$groups", acore.NewProperties().Set("deployment", *ctx.DeploymentID))
+		id.Groups = acore.NewGroups().Set("deployment", *ctx.DeploymentID)
 	}
 
 	m := []acore.Message{id}
