@@ -18,7 +18,7 @@ var analyticsClientContext = contextKey{name: "analyticsClientContext"}
 func FromContext(ctx context.Context) *Client {
 	c, ok := ctx.Value(analyticsClientContext).(*Client)
 	if !ok {
-		return newClient(&acore.NoopClient{})
+		return newClient(&acore.NoopClient{}, defaultLogger())
 	}
 	return c
 }

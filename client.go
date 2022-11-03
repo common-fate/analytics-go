@@ -71,12 +71,16 @@ func endpointOrDefault(endpoint string) string {
 	return endpoint
 }
 
+func defaultLogger() *zap.Logger {
+	return zap.New(zapcore.NewCore(zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), os.Stderr, logLevelFromEnv())).Named("cf-analytics")
+}
+
 // New creates an analytics client.
 // Usage:
 //
 //	analytics.New(analytics.Development)
 func New(c Config) *Client {
-	log := zap.New(zapcore.NewCore(zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), os.Stderr, logLevelFromEnv())).Named("cf-analytics")
+	log := defaultLogger()
 
 	// create a no-op client if analytics are disabled.
 	if !c.Enabled {

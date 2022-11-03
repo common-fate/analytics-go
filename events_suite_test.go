@@ -76,8 +76,7 @@ func TestEventsSuite(t *testing.T) {
 				UID: mockId,
 			})
 
-			c := newClient(client)
-			c.log = zaptest.NewLogger(t)
+			c := newClient(client, zaptest.NewLogger(t))
 			c.OnFailure = func(e Event) {
 				t.Fatalf("failed sending event: %s", e.Type())
 			}
