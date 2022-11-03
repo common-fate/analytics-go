@@ -14,6 +14,7 @@
         "has_reason": true,
         "provider": "commonfate/test-provider@v1",
         "requested_by": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",
+        "requires_approval": true,
         "rule_id": "rul_LNS4E5we6G3DpSsY2DnEu8coV7azNnjuUztaQ5SW0jo",
         "timing": {
           "duration_seconds": 100,

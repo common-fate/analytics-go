@@ -10,7 +10,12 @@ import (
 
 // testEvent implements the Event interface for tests.
 type testEvent struct {
-	ExampleUserID string `json:"example_user_id" analytics:"usr"`
+	ExampleUserID string     `json:"example_user_id" analytics:"usr"`
+	TestStruct    testStruct `json:"test_struct"`
+}
+
+type testStruct struct {
+	Value string
 }
 
 func (e *testEvent) userID() string      { return e.ExampleUserID }
@@ -51,6 +56,7 @@ func TestClient_marshalToCapture(t *testing.T) {
 				Event:      "TEST_ONLY",
 				Properties: acore.Properties{
 					"example_user_id": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",
+					"test_struct":     testStruct{},
 				},
 				Groups: acore.NewGroups().Set("deployment", "dep_123"),
 			},

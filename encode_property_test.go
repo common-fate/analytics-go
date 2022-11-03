@@ -15,15 +15,17 @@ func Test_eventToProperties(t *testing.T) {
 	}{
 		{
 			name: "ok",
-			event: &RequestCreated{
-				RequestedBy: "usr_123",
+			event: &testEvent{
+				ExampleUserID: "usr_123",
+				TestStruct: testStruct{
+					Value: "123",
+				},
 			},
 			want: acore.NewProperties().
-				Set("has_reason", false).
-				Set("rule_id", "").
-				Set("provider", "").
-				Set("requested_by", "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4").
-				Set("timing", Timing{}),
+				Set("example_user_id", "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4").
+				Set("test_struct", testStruct{
+					Value: "123",
+				}),
 		},
 	}
 	for _, tt := range tests {

@@ -46,16 +46,16 @@ func eventToProperties(e Event) acore.Properties {
 	return props
 }
 
-func hashStructField(typeField reflect.StructField, fieldVal reflect.Value) (val string, ok bool) {
+func hashStructField(typeField reflect.StructField, fieldVal reflect.Value) (string, bool) {
 	tag := typeField.Tag
 	at, ok := tag.Lookup("analytics")
 	if !ok {
-		return
+		return "", false
 	}
 
 	prefix, _, _ := strings.Cut(at, ",")
 	if prefix == "" {
-		return
+		return "", false
 	}
 
 	fieldInterface := fieldVal.Interface()

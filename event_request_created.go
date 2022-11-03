@@ -22,6 +22,8 @@ type RequestCreated struct {
 	RuleID      string `json:"rule_id" analytics:"rul"`
 	Timing      Timing `json:"timing"`
 	HasReason   bool   `json:"has_reason"`
+	// RequiresApproval is true if a manual approval is required.
+	RequiresApproval bool `json:"requires_approval"`
 }
 
 func (r *RequestCreated) userID() string { return r.RequestedBy }
@@ -39,6 +41,7 @@ func (r *RequestCreated) fixture() {
 			Mode:            TimingModeASAP,
 			DurationSeconds: 100,
 		},
-		HasReason: true,
+		HasReason:        true,
+		RequiresApproval: true,
 	}
 }
