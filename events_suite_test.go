@@ -62,7 +62,7 @@ func TestEventsSuite(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			body, server := mockServer()
+			body, server := mockServer(t)
 			defer server.Close()
 
 			client := acore.NewTestWithConfig(t, acore.Config{
@@ -112,22 +112,25 @@ func loadFixture(t *testing.T, fixturepath string) string {
 	return strings.TrimSpace(string(b))
 }
 
-func mockServer() (chan []byte, *httptest.Server) {
+func mockServer(t *testing.T) (chan []byte, *httptest.Server) {
 	done := make(chan []byte, 1)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		buf := bytes.NewBuffer(nil)
-		io.Copy(buf, r.Body)
+		_, err := io.Copy(buf, r.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		var v interface{}
-		err := json.Unmarshal(buf.Bytes(), &v)
+		err = json.Unmarshal(buf.Bytes(), &v)
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 
 		b, err := json.MarshalIndent(v, "", "  ")
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 
 		done <- b
