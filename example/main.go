@@ -15,9 +15,9 @@ func main() {
 	c.SetDeploymentID("dep_101")
 
 	c.Track(&analytics.RequestCreated{
-		RequestedBy: "usr_501",
-		Provider:    "commonfate/test-provider@v1",
-		RuleID:      "rul_123",
+		RequestedBy:     "usr_501",
+		BuiltInProvider: "commonfate/test-provider@v1",
+		RuleID:          "rul_123",
 		Timing: analytics.Timing{
 			DurationSeconds: 100,
 			Mode:            analytics.TimingModeASAP,

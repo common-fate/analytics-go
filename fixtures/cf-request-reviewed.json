@@ -11,13 +11,19 @@
         },
         "$lib": "cf-analytics-go",
         "$lib_version": "dev",
+        "built_in_provider": "commonfate/test-provider@v1",
         "has_reason": true,
         "override_timing": {
           "duration_seconds": 50,
           "mode": "scheduled"
         },
+        "pdk_provider": false,
         "pending_duration_seconds": 200,
-        "provider": "commonfate/test-provider@v1",
+        "provider": {
+          "name": "",
+          "publisher": "",
+          "version": ""
+        },
         "requested_by": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",
         "review": "APPROVE",
         "reviewed_by": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0",
