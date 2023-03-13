@@ -5,14 +5,16 @@ func init() {
 }
 
 type RuleUpdated struct {
-	RuleID                string `json:"rule_id" analytics:"rul"`
-	UpdatedBy             string `json:"updated_by" analytics:"usr"`
-	UsesSelectableOptions bool   `json:"uses_selectable_options"`
-	UsesDynamicOptions    bool   `json:"uses_dynamic_options"`
-	Provider              string `json:"provider"`
-	MaxDurationSeconds    int    `json:"max_duration_seconds"`
-	RequiresApproval      bool   `json:"requires_approval"`
-	OptionCount           int    `json:"option_count"`
+	RuleID                string   `json:"rule_id" analytics:"rul"`
+	UpdatedBy             string   `json:"updated_by" analytics:"usr"`
+	UsesSelectableOptions bool     `json:"uses_selectable_options"`
+	UsesDynamicOptions    bool     `json:"uses_dynamic_options"`
+	Provider              Provider `json:"provider"`
+	BuiltInProvider       string   `json:"built_in_provider"`
+	PDKProvider           bool     `json:"pdk_provider"`
+	MaxDurationSeconds    int      `json:"max_duration_seconds"`
+	RequiresApproval      bool     `json:"requires_approval"`
+	OptionCount           int      `json:"option_count"`
 }
 
 func (r *RuleUpdated) userID() string { return r.UpdatedBy }
@@ -27,7 +29,7 @@ func (r *RuleUpdated) fixture() {
 		UpdatedBy:             "usr_123",
 		UsesSelectableOptions: true,
 		UsesDynamicOptions:    true,
-		Provider:              "commonfate/test-provider@v1",
+		BuiltInProvider:       "commonfate/test-provider@v1",
 		MaxDurationSeconds:    100,
 		RequiresApproval:      true,
 		OptionCount:           5,
