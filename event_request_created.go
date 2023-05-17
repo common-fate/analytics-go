@@ -17,13 +17,12 @@ type Timing struct {
 }
 
 type RequestCreated struct {
-	RequestedBy     string   `json:"requested_by" analytics:"usr"`
-	Provider        Provider `json:"provider"`
-	BuiltInProvider string   `json:"built_in_provider"`
-	PDKProvider     bool     `json:"pdk_provider"`
-	RuleID          string   `json:"rule_id" analytics:"rul"`
-	Timing          Timing   `json:"timing"`
-	HasReason       bool     `json:"has_reason"`
+	RequestedBy       string `json:"requested_by" analytics:"usr"`
+	RuleID            string `json:"rule_id" analytics:"rul"`
+	Timing            Timing `json:"timing"`
+	HasReason         bool   `json:"has_reason"`
+	NumOfTargets      int    `json:"num_of_targets"`
+	NumOfAccessGroups int    `json:"num_of_access_groups"`
 	// RequiresApproval is true if a manual approval is required.
 	RequiresApproval bool `json:"requires_approval"`
 }
@@ -36,9 +35,10 @@ func (r *RequestCreated) EmittedWhen() string { return "Access Request was creat
 
 func (r *RequestCreated) fixture() {
 	*r = RequestCreated{
-		RequestedBy:     "usr_123",
-		BuiltInProvider: "commonfate/test-provider@v1",
-		RuleID:          "rul_123",
+		RequestedBy:       "usr_123",
+		NumOfTargets:      2,
+		NumOfAccessGroups: 3,
+		RuleID:            "rul_123",
 		Timing: Timing{
 			Mode:            TimingModeASAP,
 			DurationSeconds: 100,

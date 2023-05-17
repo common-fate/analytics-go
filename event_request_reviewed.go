@@ -5,15 +5,13 @@ func init() {
 }
 
 type RequestReviewed struct {
-	RequestedBy     string   `json:"requested_by" analytics:"usr"`
-	ReviewedBy      string   `json:"reviewed_by" analytics:"usr"`
-	Provider        Provider `json:"provider"`
-	BuiltInProvider string   `json:"built_in_provider"`
-	PDKProvider     bool     `json:"pdk_provider"`
-	RuleID          string   `json:"rule_id" analytics:"rul"`
-	Timing          Timing   `json:"timing"`
-	OverrideTiming  *Timing  `json:"override_timing"`
-	HasReason       bool     `json:"has_reason"`
+	RequestedBy    string  `json:"requested_by" analytics:"usr"`
+	ReviewedBy     string  `json:"reviewed_by" analytics:"usr"`
+	AccessGroup    string  `json:"access_group"`
+	AccessGroupId  string  `json:"access_group_id"`
+	Timing         Timing  `json:"timing"`
+	OverrideTiming *Timing `json:"override_timing"`
+	HasReason      bool    `json:"has_reason"`
 	// PendingDurationSeconds is how long the request has been waiting for a review.
 	PendingDurationSeconds float64 `json:"pending_duration_seconds"`
 	// Review is APPROVE or DENY
@@ -44,8 +42,8 @@ func (r *RequestReviewed) fixture() {
 		},
 		PendingDurationSeconds: 200,
 		Review:                 "APPROVE",
-		BuiltInProvider:        "commonfate/test-provider@v1",
-		RuleID:                 "rul_123",
+		AccessGroup:            "rul_123",
+		ReviewerIsAdmin:        true,
 		Timing: Timing{
 			Mode:            TimingModeASAP,
 			DurationSeconds: 100,
