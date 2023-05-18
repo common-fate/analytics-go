@@ -5,11 +5,12 @@ func init() {
 }
 
 type RequestRevoked struct {
-	RequestedBy   string `json:"requested_by" analytics:"usr"`
-	RevokedBy     string `json:"revoked_by" analytics:"usr"`
-	AccessGroupID string `json:"access_group_id"`
-	Timing        Timing `json:"timing"`
-	HasReason     bool   `json:"has_reason"`
+	RequestedBy      string `json:"requested_by" analytics:"usr"`
+	RevokedBy        string `json:"revoked_by" analytics:"usr"`
+	RequestID        string `json:"request_id"`
+	AccessGroupCount int    `json:"access_group_count"`
+	Timing           Timing `json:"timing"`
+	HasReason        bool   `json:"has_reason"`
 }
 
 func (r *RequestRevoked) userID() string { return r.RevokedBy }
@@ -20,9 +21,10 @@ func (r *RequestRevoked) EmittedWhen() string { return "Access Request was revok
 
 func (r *RequestRevoked) fixture() {
 	*r = RequestRevoked{
-		RequestedBy:   "usr_123",
-		RevokedBy:     "usr_234",
-		AccessGroupID: "rul_123",
+		RequestedBy:      "usr_123",
+		RevokedBy:        "usr_234",
+		RequestID:        "req_123",
+		AccessGroupCount: 3,
 		Timing: Timing{
 			Mode:            TimingModeASAP,
 			DurationSeconds: 100,

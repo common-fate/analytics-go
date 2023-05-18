@@ -19,7 +19,6 @@ type Timing struct {
 type RequestCreated struct {
 	RequestedBy string `json:"requested_by" analytics:"usr"`
 	RequestID   string `json:"request_id"`
-	Timing      Timing `json:"timing"`
 	HasReason   bool   `json:"has_reason"`
 	// total number of resources selected.
 	TargetsCount int `json:"targets_count"`
