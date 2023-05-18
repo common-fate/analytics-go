@@ -7,8 +7,9 @@ func init() {
 type RequestReviewed struct {
 	RequestedBy    string  `json:"requested_by" analytics:"usr"`
 	ReviewedBy     string  `json:"reviewed_by" analytics:"usr"`
-	AccessGroup    string  `json:"access_group"`
-	AccessGroupId  string  `json:"access_group_id"`
+	AccessGroupID  string  `json:"access_group_id"`
+	RequestID      string  `json:"request_id"`
+	TargetsCount   int     `json:"targets_count"`
 	Timing         Timing  `json:"timing"`
 	OverrideTiming *Timing `json:"override_timing"`
 	HasReason      bool    `json:"has_reason"`
@@ -34,15 +35,17 @@ func (r *RequestReviewed) EmittedWhen() string { return "Access Request was revi
 
 func (r *RequestReviewed) fixture() {
 	*r = RequestReviewed{
-		RequestedBy: "usr_123",
-		ReviewedBy:  "usr_234",
+		RequestedBy:   "usr_123",
+		ReviewedBy:    "usr_234",
+		RequestID:     "req_123",
+		AccessGroupID: "group_123",
+		TargetsCount:  4,
 		OverrideTiming: &Timing{
 			Mode:            TimingModeScheduled,
 			DurationSeconds: 50,
 		},
 		PendingDurationSeconds: 200,
 		Review:                 "APPROVE",
-		AccessGroup:            "rul_123",
 		ReviewerIsAdmin:        true,
 		Timing: Timing{
 			Mode:            TimingModeASAP,

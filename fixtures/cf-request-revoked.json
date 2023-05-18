@@ -11,17 +11,10 @@
         },
         "$lib": "cf-analytics-go",
         "$lib_version": "dev",
-        "built_in_provider": "commonfate/test-provider@v1",
+        "access_group_id": "rul_123",
         "has_reason": true,
-        "pdk_provider": false,
-        "provider": {
-          "name": "",
-          "publisher": "",
-          "version": ""
-        },
         "requested_by": "usr_-CHh8_rdIqAotcBsP64GKQkfzW2hb1JDJ_6u7q4zom4",
         "revoked_by": "usr_Lz-NqTA-GU27Kxaxnd8iHujJ5hy_JwPgwTgy8LUICI0",
-        "rule_id": "rul_LNS4E5we6G3DpSsY2DnEu8coV7azNnjuUztaQ5SW0jo",
         "timing": {
           "duration_seconds": 100,
           "mode": "asap"

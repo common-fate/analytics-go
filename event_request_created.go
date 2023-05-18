@@ -17,14 +17,14 @@ type Timing struct {
 }
 
 type RequestCreated struct {
-	RequestedBy       string `json:"requested_by" analytics:"usr"`
-	RuleID            string `json:"rule_id" analytics:"rul"`
-	Timing            Timing `json:"timing"`
-	HasReason         bool   `json:"has_reason"`
-	NumOfTargets      int    `json:"num_of_targets"`
-	NumOfAccessGroups int    `json:"num_of_access_groups"`
-	// RequiresApproval is true if a manual approval is required.
-	RequiresApproval bool `json:"requires_approval"`
+	RequestedBy string `json:"requested_by" analytics:"usr"`
+	RequestID   string `json:"request_id"`
+	Timing      Timing `json:"timing"`
+	HasReason   bool   `json:"has_reason"`
+	// total number of resources selected.
+	TargetsCount int `json:"targets_count"`
+	// total number of access groups selected.
+	AccessGroupsCount int `json:"access_groups_count"`
 }
 
 func (r *RequestCreated) userID() string { return r.RequestedBy }
@@ -36,14 +36,13 @@ func (r *RequestCreated) EmittedWhen() string { return "Access Request was creat
 func (r *RequestCreated) fixture() {
 	*r = RequestCreated{
 		RequestedBy:       "usr_123",
-		NumOfTargets:      2,
-		NumOfAccessGroups: 3,
-		RuleID:            "rul_123",
+		TargetsCount:      6,
+		AccessGroupsCount: 3,
+		RequestID:         "req_123",
 		Timing: Timing{
 			Mode:            TimingModeASAP,
 			DurationSeconds: 100,
 		},
-		HasReason:        true,
-		RequiresApproval: true,
+		HasReason: true,
 	}
 }
