@@ -15,15 +15,11 @@ func main() {
 	c.SetDeploymentID("dep_101")
 
 	c.Track(&analytics.RequestCreated{
+		RequestID:         "req_123",
 		RequestedBy:       "usr_501",
-		NumOfTargets:      4,
-		NumOfAccessGroups: 2,
-		RuleID:            "rul_123",
-		Timing: analytics.Timing{
-			DurationSeconds: 100,
-			Mode:            analytics.TimingModeASAP,
-		},
-		HasReason: true,
+		TargetsCount:      4,
+		AccessGroupsCount: 2,
+		HasReason:         true,
 	})
 
 	c.Track(&analytics.UserInfo{
