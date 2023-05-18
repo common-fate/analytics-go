@@ -9,8 +9,8 @@ type RequestRevoked struct {
 	RevokedBy        string `json:"revoked_by" analytics:"usr"`
 	RequestID        string `json:"request_id"`
 	AccessGroupCount int    `json:"access_group_count"`
-	Timing           Timing `json:"timing"`
-	HasReason        bool   `json:"has_reason"`
+	// Timing           Timing `json:"timing"`
+	HasReason bool `json:"has_reason"`
 }
 
 func (r *RequestRevoked) userID() string { return r.RevokedBy }
@@ -25,10 +25,10 @@ func (r *RequestRevoked) fixture() {
 		RevokedBy:        "usr_234",
 		RequestID:        "req_123",
 		AccessGroupCount: 3,
-		Timing: Timing{
-			Mode:            TimingModeASAP,
-			DurationSeconds: 100,
-		},
+		// Timing: Timing{
+		// 	Mode:            TimingModeASAP,
+		// 	DurationSeconds: 100,
+		// },
 		HasReason: true,
 	}
 }

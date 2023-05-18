@@ -38,10 +38,6 @@ func (r *RequestCreated) fixture() {
 		TargetsCount:      6,
 		AccessGroupsCount: 3,
 		RequestID:         "req_123",
-		Timing: Timing{
-			Mode:            TimingModeASAP,
-			DurationSeconds: 100,
-		},
-		HasReason: true,
+		HasReason:         true,
 	}
 }
