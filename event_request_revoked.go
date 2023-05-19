@@ -5,14 +5,12 @@ func init() {
 }
 
 type RequestRevoked struct {
-	RequestedBy     string   `json:"requested_by" analytics:"usr"`
-	RevokedBy       string   `json:"revoked_by" analytics:"usr"`
-	Provider        Provider `json:"provider"`
-	BuiltInProvider string   `json:"built_in_provider"`
-	PDKProvider     bool     `json:"pdk_provider"`
-	RuleID          string   `json:"rule_id" analytics:"rul"`
-	Timing          Timing   `json:"timing"`
-	HasReason       bool     `json:"has_reason"`
+	RequestedBy      string `json:"requested_by" analytics:"usr"`
+	RevokedBy        string `json:"revoked_by" analytics:"usr"`
+	RequestID        string `json:"request_id"`
+	AccessGroupCount int    `json:"access_group_count"`
+	// Timing           Timing `json:"timing"`
+	HasReason bool `json:"has_reason"`
 }
 
 func (r *RequestRevoked) userID() string { return r.RevokedBy }
@@ -23,14 +21,14 @@ func (r *RequestRevoked) EmittedWhen() string { return "Access Request was revok
 
 func (r *RequestRevoked) fixture() {
 	*r = RequestRevoked{
-		RequestedBy:     "usr_123",
-		RevokedBy:       "usr_234",
-		BuiltInProvider: "commonfate/test-provider@v1",
-		RuleID:          "rul_123",
-		Timing: Timing{
-			Mode:            TimingModeASAP,
-			DurationSeconds: 100,
-		},
+		RequestedBy:      "usr_123",
+		RevokedBy:        "usr_234",
+		RequestID:        "req_123",
+		AccessGroupCount: 3,
+		// Timing: Timing{
+		// 	Mode:            TimingModeASAP,
+		// 	DurationSeconds: 100,
+		// },
 		HasReason: true,
 	}
 }

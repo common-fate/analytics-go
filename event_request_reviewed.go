@@ -5,15 +5,14 @@ func init() {
 }
 
 type RequestReviewed struct {
-	RequestedBy     string   `json:"requested_by" analytics:"usr"`
-	ReviewedBy      string   `json:"reviewed_by" analytics:"usr"`
-	Provider        Provider `json:"provider"`
-	BuiltInProvider string   `json:"built_in_provider"`
-	PDKProvider     bool     `json:"pdk_provider"`
-	RuleID          string   `json:"rule_id" analytics:"rul"`
-	Timing          Timing   `json:"timing"`
-	OverrideTiming  *Timing  `json:"override_timing"`
-	HasReason       bool     `json:"has_reason"`
+	RequestedBy    string  `json:"requested_by" analytics:"usr"`
+	ReviewedBy     string  `json:"reviewed_by" analytics:"usr"`
+	AccessGroupID  string  `json:"access_group_id"`
+	RequestID      string  `json:"request_id"`
+	TargetsCount   int     `json:"targets_count"`
+	Timing         Timing  `json:"timing"`
+	OverrideTiming *Timing `json:"override_timing"`
+	HasReason      bool    `json:"has_reason"`
 	// PendingDurationSeconds is how long the request has been waiting for a review.
 	PendingDurationSeconds float64 `json:"pending_duration_seconds"`
 	// Review is APPROVE or DENY
@@ -36,16 +35,18 @@ func (r *RequestReviewed) EmittedWhen() string { return "Access Request was revi
 
 func (r *RequestReviewed) fixture() {
 	*r = RequestReviewed{
-		RequestedBy: "usr_123",
-		ReviewedBy:  "usr_234",
+		RequestedBy:   "usr_123",
+		ReviewedBy:    "usr_234",
+		RequestID:     "req_123",
+		AccessGroupID: "group_123",
+		TargetsCount:  4,
 		OverrideTiming: &Timing{
 			Mode:            TimingModeScheduled,
 			DurationSeconds: 50,
 		},
 		PendingDurationSeconds: 200,
 		Review:                 "APPROVE",
-		BuiltInProvider:        "commonfate/test-provider@v1",
-		RuleID:                 "rul_123",
+		ReviewerIsAdmin:        true,
 		Timing: Timing{
 			Mode:            TimingModeASAP,
 			DurationSeconds: 100,
